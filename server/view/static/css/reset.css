@@ -1,0 +1,49 @@
+*{
+  box-sizing: border-box;
+}
+*:focus{
+  outline: none;
+}
+body{
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  font-size: 12px;
+  font-family: '微软雅黑';
+  color: #333;
+  background-color: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+p,h1,h2,h3,h4,h5,h6,dl, dt, dd, ol, ul, li,form,fieldset,input,textarea,p,blockquote,th,td{
+  margin: 0;
+  padding: 0;
+}
+li{
+  list-style-type: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+a{
+  text-decoration: none;
+  color: #333;
+}
+h1,h2,h3,h4,h5,h6 {
+  font-weight: normal;
+  font-size: 100%;
+}
+
+/*element-UI*/
+.element-breadcrumb {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+.element-search {
+  margin-bottom: 10px;
+}
+.el-select {
+  width: 100%;
+}
+/*element-UI*/
