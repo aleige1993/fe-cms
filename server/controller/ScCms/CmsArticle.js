@@ -6,9 +6,9 @@ var connection = require('../../mysql/connection/ScCms');
 var formactResult = require('../../utils/formactResult');
 var dateTime = require('../../utils/dateTime');
 var CmsArticle = require('../../model/ScCms/CmsArticle');
+var article = CmsArticle(connection, sequelize);
 
-router.get('/list', function(req, res, next) {
-  var article = CmsArticle(connection, sequelize);
+router.get('/articleList', function(req, res, next) {
   article.findAll().then(function (result) {
     res.send(formactResult.success(result));
   }).catch(function (result) {
@@ -16,9 +16,7 @@ router.get('/list', function(req, res, next) {
   });
 });
 
-router.post('/add', function(req, res, next) {
-  console.log(req.body);
-  var article = CmsArticle(connection, sequelize);
+router.post('/articleAdd', function(req, res, next) {
   req.body.gmtCreate = dateTime.getCurrentTime();
   article.create(req.body).then(function () {
     res.send(formactResult.success());

@@ -12,12 +12,10 @@ export default new Router({
       path: '/index', component: resolve => { require(['@/pages/page-index'], resolve) },
       children: [
         { path: '/', component: resolve => { require(['@/pages/page-home'], resolve) }},
+        // 文章管理
         {
-          path: 'conf', component: resolve => { require(['@/pages/page-conf'], resolve) },
-          children: [
-            { path: 'newslist', component: resolve => { require(['@/pages/page-conf/news'], resolve) }},
-          ]
-        },
+          path: 'articleList', component: resolve => { require(['@/pages/page-article'], resolve) }
+        }
       ]
     }
   ],

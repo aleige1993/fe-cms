@@ -31,12 +31,8 @@
           "name": "首页",
           "url": "/index"
         }, {
-          "name": "配置管理",
-          "childMenus": [{
-            "name": "新闻管理",
-            "url": "/index/conf/newslist"
-          }],
-          "url": "/index/conf"
+          "name": "文章管理",
+          "url": "/index/articleList"
         }]);
       }
     },
