@@ -17,13 +17,13 @@ router.get('/list', function(req, res, next) {
 });
 
 router.get('/add', function(req, res, next) {
-  // var news = ScNews(connection, sequelize);
-  // req.body.createTime = dateTime.getCurrentTime();
-  // news.create(req.body).then(function () {
-  //   res.send(formactResult.success());
-  // }).catch(function (result) {
-  //   res.send(formactResult.error('添加失败', result));
-  // });
+  var article = CmsArticle(connection, sequelize);
+  req.body.gmtCreate = dateTime.getCurrentTime();
+  article.create(req.body).then(function () {
+    res.send(formactResult.success());
+  }).catch(function (result) {
+    res.send(formactResult.error('添加失败', result));
+  });
 });
 
 // router.post('/newsModify', function(req, res, next) {
