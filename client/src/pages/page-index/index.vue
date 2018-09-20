@@ -30,14 +30,12 @@
         this.$store.dispatch('setMenuList', [{
           "name": "首页",
           "url": "/index"
-        }, {
-          "name": "配置管理",
-          "childMenus": [{
-            "name": "新闻管理",
-            "url": "/index/conf/newslist"
-          }],
-          "url": "/index/conf"
-        }]);
+        },
+        {
+          "name": "广告管理列表",
+          "url": "/advert"
+        }
+        ]);
       }
     },
     mounted() {

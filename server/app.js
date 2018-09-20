@@ -14,5 +14,5 @@ app.use(express.static(path.join(__dirname, 'view')));
 var controllerBaseUrl =  './controller/';
 app.use('/api', require(controllerBaseUrl + 'index'));
 app.use('/article', require(controllerBaseUrl + 'ScCms/CmsArticle'));
-
+app.use('/advert', require(controllerBaseUrl + 'ScCms/CmsAdvertisement'));
 module.exports = app;

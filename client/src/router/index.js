@@ -13,10 +13,7 @@ export default new Router({
       children: [
         { path: '/', component: resolve => { require(['@/pages/page-home'], resolve) }},
         {
-          path: 'conf', component: resolve => { require(['@/pages/page-conf'], resolve) },
-          children: [
-            { path: 'newslist', component: resolve => { require(['@/pages/page-conf/news'], resolve) }},
-          ]
+          path: '/advert', component: resolve => { require(['@/pages/page-advert'], resolve)}, 
         },
       ]
     }
