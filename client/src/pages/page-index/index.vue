@@ -1,9 +1,9 @@
 <template>
   <div id="page-index">
-    <top-bar></top-bar>
+    <top-bar v-if="!noaction"></top-bar>
     <div class="wrap">
-      <left-nav class="layout-left"></left-nav>
-      <div class="layout">
+      <left-nav v-if="!noaction" class="layout-left"></left-nav>
+      <div :class="{layout: !noaction}">
         <div class="layout-main">
           <router-view></router-view>
         </div>
@@ -24,6 +24,11 @@
     components: {
       'top-bar': Topbar,
       LeftNav
+    },
+    computed: {
+      noaction() {
+        return this.$route.query.noaction;
+      }
     },
     methods: {
       initMenuList() {

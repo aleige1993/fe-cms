@@ -13,9 +13,8 @@ export default new Router({
       children: [
         { path: '/', component: resolve => { require(['@/pages/page-home'], resolve) }},
         // 文章管理
-        {
-          path: 'articleList', component: resolve => { require(['@/pages/page-article'], resolve) }
-        }
+        {path: 'articleList', component: resolve => { require(['@/pages/page-article/list'], resolve) }},
+        {path: 'articleDetail', component: resolve => { require(['@/pages/page-article/detail'], resolve) }}
       ]
     }
   ],
