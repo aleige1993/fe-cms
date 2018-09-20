@@ -1,5 +1,5 @@
 /* jshint indent: 2 */
-var dateTime = require('../utils/dateTime');
+var dateTime = require('../../utils/dateTime');
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('ScNews', {

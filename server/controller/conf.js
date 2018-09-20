@@ -2,10 +2,10 @@
 var express = require('express');
 var router = express.Router();
 var sequelize = require('sequelize');
-var connection = require('../mysql/connection');
+var connection = require('../mysql/connection/ScProtal');
 var formactResult = require('../utils/formactResult');
 var dateTime = require('../utils/dateTime');
-var ScNews = require('../model/ScNews');
+var ScNews = require('../model/ScProtal/ScNews');
 
 router.get('/newsList', function(req, res, next) {
   var news = ScNews(connection, sequelize);
