@@ -13,7 +13,6 @@ module.exports = {
     PORT: 3306
   },
   DATABASE: {
-    SC_PORTAL: 'sc_portal',
     SC_CMS: 'sc_cms_dev'
   }
 };
