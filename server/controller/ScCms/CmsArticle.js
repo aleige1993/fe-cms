@@ -16,7 +16,8 @@ router.get('/list', function(req, res, next) {
   });
 });
 
-router.get('/add', function(req, res, next) {
+router.post('/add', function(req, res, next) {
+  console.log(req.body);
   var article = CmsArticle(connection, sequelize);
   req.body.gmtCreate = dateTime.getCurrentTime();
   article.create(req.body).then(function () {
