@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname, 'view')));
 
 // api
 var controllerBaseUrl =  './controller/';
-app.use('/', require(controllerBaseUrl + 'index'));
+app.use('/api', require(controllerBaseUrl + 'index'));
 app.use('/article', require(controllerBaseUrl + 'ScCms/CmsArticle'));
 
 module.exports = app;
