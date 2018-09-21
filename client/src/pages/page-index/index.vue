@@ -31,14 +31,9 @@
       }
     },
     methods: {
-      initMenuList() {
-        this.$store.dispatch('setMenuList', [{
-          "name": "首页",
-          "url": "/index"
-        }, {
-          "name": "文章管理",
-          "url": "/index/articleList"
-        }]);
+      async initMenuList() {
+        let res = await this.$http.get('/common/menuList', {});
+        this.$store.dispatch('setMenuList', res.body);
       }
     },
     mounted() {

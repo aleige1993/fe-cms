@@ -20,7 +20,8 @@ app.all('*', function(req, res, next) {
 });
 
 var controllerBaseUrl =  './controller/';
-app.use('/index', require(controllerBaseUrl + 'index'));
+app.use('/common', require(controllerBaseUrl + 'common'));
 app.use('/article', require(controllerBaseUrl + 'ScCms/CmsArticle'));
+app.use('/headline', require(controllerBaseUrl + 'ScCms/CmsHeadline'));
 
 module.exports = app;

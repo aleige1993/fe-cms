@@ -14,7 +14,9 @@ export default new Router({
         { path: '/', component: resolve => { require(['@/pages/page-home'], resolve) }},
         // 文章管理
         {path: 'articleList', component: resolve => { require(['@/pages/page-article/list'], resolve) }},
-        {path: 'articleDetail', component: resolve => { require(['@/pages/page-article/detail'], resolve) }}
+        {path: 'articleDetail', component: resolve => { require(['@/pages/page-article/detail'], resolve) }},
+        // 头条管理
+        {path: 'headlineList', component: resolve => { require(['@/pages/page-headline'], resolve) }},
       ]
     }
   ],
