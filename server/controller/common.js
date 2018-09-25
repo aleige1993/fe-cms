@@ -18,6 +18,15 @@ router.get('/menuList', function (req, res, next) {
 
 router.get('/items', function (req, res, next) {
   var enumList = [{
+    "EnumName": "IsUsedEnum",
+    "items": [{
+      "text": "启用",
+      "value": 1
+    }, {
+      "text": "禁用",
+      "value": 2
+    }]
+  },{
     "EnumName": "TerminalTypeEnum",
     "items": [{
       "text": "APP端",

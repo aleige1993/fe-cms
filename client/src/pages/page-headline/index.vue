@@ -8,20 +8,51 @@
         <el-breadcrumb-item>头条列表</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
-    <div class="element-search">
-      <el-button size="mini" type="primary" @click="addTableList">添加</el-button>
-    </div>
-    <el-table :data="tableData" border style="width: 100%">
+    <el-form :inline="true" :model="searchForm" class="demo-form-inline" size="mini">
+      <el-form-item label="标题">
+        <el-input v-model="searchForm.title" placeholder=""></el-input>
+      </el-form-item>
+      <el-form-item label="终端">
+        <el-select style="width: 100px" v-model="searchForm.terminal" placeholder="请选择">
+          <el-option label="全部" value="">全部</el-option>
+          <el-option v-for="item in this.$Tool.getEnumData('TerminalTypeEnum')" :key="item.value" :label="item.text" :value="item.value"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="">
+        <el-select v-model="searchForm.appType" placeholder="请选择">
+          <el-option label="全部" value="">全部</el-option>
+          <el-option v-if="searchForm.terminal === 1" v-for="item in this.$Tool.getEnumData('AppProcjectEnum')" :key="item.value" :label="item.text" :value="item.value">{{item.text}}</el-option>
+          <el-option v-if="searchForm.terminal === 2" v-for="item in this.$Tool.getEnumData('PcProcjetEnum')" :key="item.value" :label="item.text" :value="item.value">{{item.text}}</el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="状态">
+        <el-select style="width: 100px" v-model="searchForm.isUsed" placeholder="请选择">
+          <el-option label="全部" value="">全部</el-option>
+          <el-option v-for="item in this.$Tool.getEnumData('IsUsedEnum')" :key="item.value" :label="item.text" :value="item.value"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="tableList">查询</el-button>
+      </el-form-item>
+      <el-button  size="mini" type="primary" @click="addTableList">添加</el-button>
+    </el-form>
+    <el-table :data="tableData" border>
       <el-table-column prop="title" label="标题" width="180"></el-table-column>
-      <el-table-column prop="author"  width="100" label="作者"></el-table-column>
-      <el-table-column prop="url"  width="280" label="文章链接">
+      <el-table-column prop="url"  width="280" label="详情链接"></el-table-column>
+      <el-table-column prop="appType"  width="120" label="发布终端">
         <template slot-scope="scope">
-          <a target="_blank" :href="scope.row.url">{{scope.row.url}}</a>
+          <span v-if="scope.row.terminal === 1">{{getEnumTextByValue('AppProcjectEnum', scope.row.appType)}}</span>
+          <span v-if="scope.row.terminal === 2">{{getEnumTextByValue('PcProcjetEnum', scope.row.appType)}}</span>
         </template>
       </el-table-column>
       <el-table-column prop="gmtCreate"  width="180" label="创建时间"></el-table-column>
       <el-table-column prop="gmtUpdate"  width="180" label="更新时间"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column prop="isUsed" label="状态">
+        <template slot-scope="scope">
+          <span>{{getEnumTextByValue('IsUsedEnum', scope.row.isUsed)}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="180">
         <template slot-scope="scope">
           <el-button size="mini" @click="editTableList(scope.row)">编辑</el-button>
           <el-button size="mini" type="danger" @click="deleteTableList(scope.row)">删除</el-button>
@@ -37,20 +68,24 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="120px" size="mini">
         <el-form-item v-if="form.type === 1" label="选择文章" prop="articleId">
           <div style="display: flex">
-            <el-input style="margin-right: 10px" v-model="form.articleName" auto-complete="off"></el-input>
+            <el-input disabled style="margin-right: 10px" v-model="form.articleName" auto-complete="off"></el-input>
             <input type="hidden" v-model="form.articleId"/>
             <el-button @click="dialogTableVisible = true" type="primary">选择</el-button>
-            <!--<el-button type="danger">取消</el-button>-->
           </div>
         </el-form-item>
-        <el-form-item label="使用外部链接" prop="url">
+        <el-form-item v-if="form.type === 1" label="外部链接" prop="">
           <div style="display: flex">
-            <el-input :disabled="form.type === 1" style="margin-right: 10px"  v-model="form.url" auto-complete="off"></el-input>
-            <el-button v-if="form.type === 1" type="primary" @click="form.type = 2">使用</el-button>
-            <el-button v-if="form.type === 2" type="primary" @click="form.type = 1">不使用</el-button>
+            <el-input disabled style="margin-right: 10px"  v-model="form.outUrl" auto-complete="off"></el-input>
+            <el-button type="primary" @click="form.type = 2">使用</el-button>
           </div>
         </el-form-item>
-        <el-form-item label="封面">
+        <el-form-item v-if="form.type === 2" label="外部链接" prop="outUrl">
+          <div style="display: flex">
+            <el-input style="margin-right: 10px"  v-model="form.outUrl" auto-complete="off"></el-input>
+            <el-button  type="primary" @click="form.type = 1">不使用</el-button>
+          </div>
+        </el-form-item>
+        <el-form-item label="封面" prop="coverPhotoUrl">
           <el-upload
             :action="this.$config.HTTPBOSSURL + '/common/upload'"
             :show-file-list="false"
@@ -66,19 +101,22 @@
         </el-form-item>
         <el-form-item label="发布终端类型" prop="terminal">
           <el-select v-model="form.terminal" placeholder="请选择">
-            <el-option v-for="item in terminalTypeList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+            <el-option v-for="item in this.$Tool.getEnumData('TerminalTypeEnum')" :key="item.value" :label="item.text" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item v-if="form.terminal" label="终端项目" prop="appType">
-          <el-radio-group v-model="form.appType">
-            <el-radio v-if="form.terminal === 1" v-for="item in appTypeList" :key="item.value" :label="item.value">{{item.text}}</el-radio>
-            <el-radio v-if="form.terminal === 2" v-for="item in pcTypeList" :key="item.value" :label="item.value">{{item.text}}</el-radio>
+          <el-radio-group v-if="form.terminal === 1" v-model="form.appType">
+            <el-radio v-for="item in this.$Tool.getEnumData('AppProcjectEnum')" :key="item.value" :label="item.value">{{item.text}}</el-radio>
+          </el-radio-group>
+          <el-radio-group v-if="form.terminal === 2" v-model="form.appType">
+            <el-radio v-for="item in this.$Tool.getEnumData('PcProcjetEnum')" :key="item.value" :label="item.value">{{item.text}}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="是否启用" prop="isUsed">
           <el-radio-group v-model="form.isUsed">
-            <el-radio label="1" name="type">启用</el-radio>
-            <el-radio label="2" name="type">禁用</el-radio>
+            <el-radio name="type" v-for="item in this.$Tool.getEnumData('IsUsedEnum')" :key="item.value" :label="item.value" :value="item.value">
+              {{item.text}}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -105,40 +143,54 @@
     data() {
       return {
         rules: {
-//          title: {required: true, message: '标题不能为空', trigger: 'blur' },
-//          author: {required: true, message: '作者不能为空', trigger: 'blur' },
-//          content: {required: true, message: '内容不能为空', trigger: 'blur' }
+          articleId: {required: true, message: '请选择文章'},
+          url: {required: true, message: '外部链接不能为空'},
+          coverPhotoUrl: {required: true, message: '请选择封面'},
+          title: {required: true, message: '标题名称不能为空'},
+          terminal: {required: true, message: '请选择发布终端'},
+          appType: {required: true, message: '请选择终端项目'},
+          isUsed: {required: true, message: '请选择是否启用'},
         },
         tableData: [],
+        searchForm: {},
         isAdd: true,
         dialogFormVisible: false,
         form: {
           type: 1,
-          articleId: '',
+          articleId: null,
           articleName: '',
+          outUrl: '',
           coverPhotoUrl: '',
           appType: []
         },
         loading: false,
         dialogTableVisible: false,
-        terminalTypeList: [],
-        appTypeList: [],
-        pcTypeList: []
+//        terminalTypeList: [],
+//        appTypeList: [],
+//        pcTypeList: []
       }
     },
     components: {
       tableArticleList
     },
     watch: {
-      'form.type'() {
-        this.$data.form.articleId = '';
+      'form.type'(newVal, oldVal) {
+        this.$data.form.articleId = null;
         this.$data.form.articleName = '';
-      },
-      'form.terminal'() {
-        this.$data.form.appType = [];
+        this.$data.form.articleUrl = '';
+        this.$data.form.outUrl = '';
+//        if (newVal === 1 && newVal === 2) {
+//          this.$data.form.outUrl = '';
+//        }
       }
+//      'form.terminal'() {
+//        this.$data.form.appType = [];
+//      }
     },
     methods: {
+      getEnumTextByValue(enumName, value) {
+        return this.$Tool.getEnumTextByValue(enumName, value);
+      },
       getSelectRow(row) {
         this.$data.form.articleId = row.id;
         this.$data.form.articleName = row.title;
@@ -147,13 +199,23 @@
       },
       addTableList() {
         this.$data.isAdd = true;
-//        this.$data.form = {};
         this.$data.dialogFormVisible = true;
       },
-      editTableList(row) {
-        this.$data.isAdd = false;
-        this.$data.form = Object.assign({}, row);
-        this.$data.dialogFormVisible = true;
+      async editTableList(row) {
+        let res = await this.$http.post('/article/articleList', {
+          id: row.articleId
+        });
+        if (res.success) {
+          if (row.type === 1) {
+            row.articleName = res.body.title;
+          }
+          if (row.type === 2) {
+            row.outUrl = row.url;
+          }
+          this.$data.isAdd = false;
+          this.$data.form = Object.assign({}, row);
+          this.$data.dialogFormVisible = true;
+        }
       },
       deleteTableList(row) {
         this.$confirm(`确认删除标题为"${row.title}"的文章？`).then(async () => {
@@ -168,7 +230,9 @@
         }).catch(() => {});
       },
       async tableList() {
-        let res = await this.$http.get('/article/articleList', {});
+        let res = await this.$http.post('/headline/headlineList', {
+          ...this.$data.searchForm
+        });
         if (res.success) {
           this.$data.tableData = res.body;
         }
@@ -180,7 +244,10 @@
             if (this.$data.form.type === 1) {
               this.$data.form.url = this.$data.form.articleUrl;
             }
-            let submitUrl = this.$data.isAdd ? '/headline/headlineAdd' : '/article/articleModify';
+            if (this.$data.form.type === 2) {
+              this.$data.form.url = this.$data.form.outUrl;
+            }
+            let submitUrl = this.$data.isAdd ? '/headline/headlineAdd' : '/headline/headlineModify';
             let res = await this.$http.post(submitUrl, {
               ...this.$data.form
             });
@@ -202,9 +269,9 @@
     },
     mounted() {
       this.tableList();
-      this.$data.terminalTypeList = this.$Tool.getEnumData('TerminalTypeEnum');
-      this.$data.appTypeList = this.$Tool.getEnumData('AppProcjectEnum');
-      this.$data.pcTypeList = this.$Tool.getEnumData('PcProcjetEnum');
+//      this.$data.terminalTypeList = this.$Tool.getEnumData('TerminalTypeEnum');
+//      this.$data.appTypeList = this.$Tool.getEnumData('AppProcjectEnum');
+//      this.$data.pcTypeList = this.$Tool.getEnumData('PcProcjetEnum');
     }
   }
 </script>

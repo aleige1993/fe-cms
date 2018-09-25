@@ -5,7 +5,6 @@ class Tools {
 
   /*****
    * 根据枚举值获取数据
-   *
    */
   getEnumData(enumName) {
     let enumArr = [];
@@ -15,6 +14,19 @@ class Tools {
       }
     });
     return enumArr;
+  }
+
+  /*****
+   * 根据枚举值key获取value
+   */
+  getEnumTextByValue(enumName, value) {
+    let enumText = '';
+    this.getEnumData(enumName).map(item => {
+        if (item.value === value) {
+          enumText = item.text;
+        }
+    });
+    return enumText;
   }
 
 }

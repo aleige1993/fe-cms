@@ -1,9 +1,18 @@
 
 <template>
   <div id="table-article-list">
-    <div v-if="!selectTable" class="element-search">
-      <el-button size="mini" type="primary" @click="addTableList">添加</el-button>
-    </div>
+    <el-form :inline="true" :model="searchForm" class="demo-form-inline" size="mini">
+      <el-form-item label="标题">
+        <el-input v-model="searchForm.title" placeholder=""></el-input>
+      </el-form-item>
+      <el-form-item label="作者">
+        <el-input v-model="searchForm.author" placeholder=""></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="tableList">查询</el-button>
+      </el-form-item>
+      <el-button v-if="!selectTable" size="mini" type="primary" @click="addTableList">添加</el-button>
+    </el-form>
     <el-table :data="tableData" border style="width: 100%">
       <el-table-column prop="title" label="标题" width="180"></el-table-column>
       <el-table-column prop="author"  width="100" label="作者"></el-table-column>
@@ -32,7 +41,7 @@
       :title="isAdd ? '添加文章' : '编辑文章'"
       :visible.sync="dialogFormVisible"
       :close-on-click-modal="false">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px" size="mini">
         <el-form-item label="标题" prop="title">
           <el-input v-model="form.title" auto-complete="off"></el-input>
         </el-form-item>
@@ -69,6 +78,10 @@
           author: {required: true, message: '作者不能为空', trigger: 'blur' },
           content: {required: true, message: '内容不能为空', trigger: 'blur' }
         },
+        searchForm: {
+          'title': '',
+          'author': ''
+        },
         tableData: [],
         isAdd: true,
         dialogFormVisible: false,
@@ -92,8 +105,8 @@
       },
       addTableList() {
         this.$data.isAdd = true;
-//        this.$data.form = {};
         this.$data.dialogFormVisible = true;
+        this.$refs['form'].resetFields();
       },
       editTableList(row) {
         this.$data.isAdd = false;
@@ -116,7 +129,9 @@
         this.$emit('on-select', row);
       },
       async tableList() {
-        let res = await this.$http.get('/article/articleList', {});
+        let res = await this.$http.post('/article/articleList', {
+          ...this.$data.searchForm
+        });
         if (res.success) {
           this.$data.tableData = res.body;
         }

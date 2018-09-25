@@ -15,7 +15,9 @@
       }
     },
     async mounted() {
-      let res = await this.$http.get('/article/articleList?id=' + this.$route.query.id);
+      let res = await this.$http.post('/article/articleList', {
+        id: this.$route.query.id
+      });
       this.$data.detail = res.body;
     }
   }

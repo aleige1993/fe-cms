@@ -8,18 +8,25 @@ var dateTime = require('../../utils/dateTime');
 var CmsArticle = require('../../model/ScCms/CmsArticle');
 var article = CmsArticle(connection, sequelize);
 
-router.get('/articleList', function(req, res, next) {
-  var id = req.query.id;
-  if (id && id.length) {
+router.post('/articleList', (req, res, next) => {
+  var id = req.body.id;
+  if (id) {
     article.findOne({'where': {'id': id}}).then(function (result) {
       res.send(formactResult.success(result));
     }).catch(function (result) {
       res.send(formactResult.error('获取失败', result));
     });
   } else {
-    article.findAll().then(function (result) {
+    article.findAll({
+      'where': {
+        'title': {$like: '%' + (req.body.title || '') + '%'},
+        'author': {$like: '%' + (req.body.author || '') + '%'}
+      },
+      'order': [['gmtCreate', 'DESC']]
+    }).then(function (result) {
       res.send(formactResult.success(result));
     }).catch(function (result) {
+      console.log(result);
       res.send(formactResult.error('获取失败', result));
     });
   }

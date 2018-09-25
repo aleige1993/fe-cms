@@ -8,22 +8,31 @@ var dateTime = require('../../utils/dateTime');
 var CmsHeadline = require('../../model/ScCms/CmsHeadline');
 var headline = CmsHeadline(connection, sequelize);
 
-// router.get('/articleList', function(req, res, next) {
-//   var id = req.query.id;
-//   if (id && id.length) {
-//     article.findOne({'where': {'id': id}}).then(function (result) {
-//       res.send(formactResult.success(result));
-//     }).catch(function (result) {
-//       res.send(formactResult.error('获取失败', result));
-//     });
-//   } else {
-//     article.findAll().then(function (result) {
-//       res.send(formactResult.success(result));
-//     }).catch(function (result) {
-//       res.send(formactResult.error('获取失败', result));
-//     });
-//   }
-// });
+router.post('/headlineList', (req, res, next) => {
+  var id = req.body.id;
+  if (id) {
+    headline.findOne({'where': {'id': id}}).then(function (result) {
+      res.send(formactResult.success(result));
+    }).catch(function (result) {
+      res.send(formactResult.error('获取失败', result));
+    });
+  } else {
+    headline.findAll({
+      'where': {
+        'title': {$like: '%' + (req.body.title || '') + '%'},
+        'terminal': {$like: '%' + (req.body.terminal || '') + '%'},
+        'appType': {$like: '%' + (req.body.appType || '') + '%'},
+        'isUsed': {$like: '%' + (req.body.isUsed || '') + '%'},
+      },
+      'order': [['gmtCreate', 'DESC']]
+    }).then(function (result) {
+      res.send(formactResult.success(result));
+    }).catch(function (result) {
+      console.log(result);
+      res.send(formactResult.error('获取失败', result));
+    });
+  }
+});
 
 router.post('/headlineAdd', function(req, res, next) {
   req.body.gmtCreate = dateTime.getCurrentTime();
@@ -34,9 +43,9 @@ router.post('/headlineAdd', function(req, res, next) {
   });
 });
 
-router.post('/articleModify', function(req, res, next) {
+router.post('/headlineModify', function(req, res, next) {
   req.body.gmtUpdate = dateTime.getCurrentTime();
-  article.update(req.body, {'where': {'id': req.body.id}}).then(function () {
+  headline.update(req.body, {'where': {'id': req.body.id}}).then(function () {
     res.send(formactResult.success());
   }).catch(function (result) {
     res.send(formactResult.error('修改失败', result));
