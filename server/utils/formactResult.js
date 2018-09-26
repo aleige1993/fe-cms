@@ -10,9 +10,9 @@ var formactResult = {
   },
 
   error(reMsg = '失败', result = null) {
-    if (result && result.name) {
-      result = result.name;
-    }
+    // if (result && result.name) {
+    //   result = result.name;
+    // }
     return {
       body: result,
       reMsg: reMsg,

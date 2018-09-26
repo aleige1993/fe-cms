@@ -1,6 +1,6 @@
 'use strict'
 module.exports = {
   NODE_ENV: '"production"',
-  HTTPAPIURL: '"/api/"',
+  HTTPAPIURL: '""',
   HTTPBOSSURL: '"http://boss.songcw.com"'
 }

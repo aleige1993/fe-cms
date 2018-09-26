@@ -36,17 +36,17 @@ module.exports = function(sequelize, DataTypes) {
     },
     terminal: {
       field: 'terminal',
-      type: DataTypes.INTEGER(4),
-      allowNull: false
+      type: DataTypes.STRING,
+      allowNull: true
     },
     appType: {
       field: 'app_type',
-      type: DataTypes.INTEGER(4),
+      type: DataTypes.STRING,
       allowNull: true
     },
     isUsed: {
       field: 'is_used',
-      type: DataTypes.INTEGER(4),
+      type: DataTypes.STRING,
       allowNull: false
     },
     gmtCreate: {
@@ -63,6 +63,12 @@ module.exports = function(sequelize, DataTypes) {
       field: 'creater_id',
       type: DataTypes.STRING,
       allowNull: true
+    },
+    isOutUrl: {
+      field: 'is_out_url',
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: '1'
     }
   }, {
     tableName: 'cms_advertisement',

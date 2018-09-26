@@ -12,9 +12,8 @@ export default new Router({
       path: '/index', component: resolve => { require(['@/pages/page-index'], resolve) },
       children: [
         { path: '/', component: resolve => { require(['@/pages/page-home'], resolve) }},
-        {
-          path: '/advert', component: resolve => { require(['@/pages/page-advert'], resolve)}, 
-        },
+        { path: 'advert', component: resolve => { require(['@/pages/page-advert'], resolve)}},
+        { path: 'articleList', component: resolve => { require(['@/pages/page-article'], resolve) }}
       ]
     }
   ],
