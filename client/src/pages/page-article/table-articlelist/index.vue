@@ -52,8 +52,7 @@
           <el-input type="textarea" placeholder="" v-model="form.abstract"></el-input>
         </el-form-item>
         <el-form-item label="内容" prop="content">
-          <editor v-if="isAdd" @change="editorContent"></editor>
-          <editor v-else="" :editor-content="form.content" @change="editorContent"></editor>
+          <editor :editor-content="form.content" @change="editorContent"></editor>
         </el-form-item>
         <el-form-item v-if="!isAdd" label="文章链接" prop="url">
           <a target="_blank" :href="form.url">{{form.url}}</a>
@@ -106,12 +105,17 @@
       addTableList() {
         this.$data.isAdd = true;
         this.$data.dialogFormVisible = true;
-        this.$refs['form'].resetFields();
+        this.$nextTick(() => {
+          this.$refs.form.resetFields();
+        });
       },
       editTableList(row) {
         this.$data.isAdd = false;
-        this.$data.form = Object.assign({}, row);
         this.$data.dialogFormVisible = true;
+        this.$nextTick(() => {
+          this.$refs.form.resetFields();
+          this.$data.form = Object.assign({}, row);
+        });
       },
       deleteTableList(row) {
         this.$confirm(`确认删除标题为"${row.title}"的文章？`).then(async () => {

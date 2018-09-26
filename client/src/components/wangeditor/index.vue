@@ -3,6 +3,7 @@
 </template>
 <script>
   import Editor from 'wangeditor';
+  let editor = null;
   export default {
     name: 'editor',
     data() {
@@ -18,7 +19,7 @@
     },
     methods: {
       initEditor() {
-        let editor = new Editor(this.$refs.editor);
+        editor = new Editor(this.$refs.editor);
         editor.customConfig.debug = true;
         // 自定义菜单配置
         editor.customConfig.menus = [
@@ -58,9 +59,12 @@
           _this.$emit('change', html);
         };
         editor.create();
-        if (this.editorContent) {
-          editor.txt.html(this.editorContent);
-        }
+        editor.txt.html(this.editorContent);
+      }
+    },
+    watch: {
+      'editorContent'() {
+        editor.txt.html(this.editorContent);
       }
     },
     mounted() {

@@ -13,16 +13,21 @@
         <el-input v-model="searchForm.title" placeholder=""></el-input>
       </el-form-item>
       <el-form-item label="终端">
-        <el-select style="width: 100px" v-model="searchForm.terminal" placeholder="请选择">
+        <el-select style="width: 100px"  v-model="searchForm.terminal" placeholder="请选择">
           <el-option label="全部" value="">全部</el-option>
           <el-option v-for="item in this.$Tool.getEnumData('TerminalTypeEnum')" :key="item.value" :label="item.text" :value="item.value"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="">
+      <el-form-item v-if="searchForm.terminal === 1"  label="">
         <el-select v-model="searchForm.appType" placeholder="请选择">
           <el-option label="全部" value="">全部</el-option>
-          <el-option v-if="searchForm.terminal === 1" v-for="item in this.$Tool.getEnumData('AppProcjectEnum')" :key="item.value" :label="item.text" :value="item.value">{{item.text}}</el-option>
-          <el-option v-if="searchForm.terminal === 2" v-for="item in this.$Tool.getEnumData('PcProcjetEnum')" :key="item.value" :label="item.text" :value="item.value">{{item.text}}</el-option>
+          <el-option v-for="item in this.$Tool.getEnumData('AppProcjectEnum')" :key="item.value" :label="item.text" :value="item.value">{{item.text}}</el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item v-if="searchForm.terminal === 2" label="">
+        <el-select v-model="searchForm.pcType" placeholder="请选择">
+          <el-option label="全部" value="">全部</el-option>
+          <el-option  v-for="item in this.$Tool.getEnumData('PcProcjetEnum')" :key="item.value" :label="item.text" :value="item.value">{{item.text}}</el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="状态">
@@ -164,10 +169,7 @@
           appType: []
         },
         loading: false,
-        dialogTableVisible: false,
-//        terminalTypeList: [],
-//        appTypeList: [],
-//        pcTypeList: []
+        dialogTableVisible: false
       }
     },
     components: {
@@ -200,6 +202,9 @@
       addTableList() {
         this.$data.isAdd = true;
         this.$data.dialogFormVisible = true;
+        this.$nextTick(() => {
+          this.$refs.form.resetFields();
+        });
       },
       async editTableList(row) {
         let res = await this.$http.post('/article/articleList', {
@@ -213,8 +218,11 @@
             row.outUrl = row.url;
           }
           this.$data.isAdd = false;
-          this.$data.form = Object.assign({}, row);
           this.$data.dialogFormVisible = true;
+          this.$nextTick(() => {
+            this.$refs.form.resetFields();
+            this.$data.form = Object.assign({}, row);
+          });
         }
       },
       deleteTableList(row) {
@@ -230,6 +238,9 @@
         }).catch(() => {});
       },
       async tableList() {
+        if (this.$data.searchForm.terminal === 2) {
+          this.$data.searchForm.appType = this.$data.searchForm.pcType;
+        }
         let res = await this.$http.post('/headline/headlineList', {
           ...this.$data.searchForm
         });
@@ -269,9 +280,6 @@
     },
     mounted() {
       this.tableList();
-//      this.$data.terminalTypeList = this.$Tool.getEnumData('TerminalTypeEnum');
-//      this.$data.appTypeList = this.$Tool.getEnumData('AppProcjectEnum');
-//      this.$data.pcTypeList = this.$Tool.getEnumData('PcProcjetEnum');
     }
   }
 </script>
