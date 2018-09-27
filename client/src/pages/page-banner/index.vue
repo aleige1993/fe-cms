@@ -101,7 +101,7 @@
             :show-file-list="false"
             :on-success="uploadSuccess">
             <div v-if="!form.coverPhotoUrl">
-              <el-button size="mini" type="primary">点击上传</el-button>
+              <el-button size="mini" type="primary">选择文件</el-button>
             </div>
             <img v-else="" height="90" :src="form.coverPhotoUrl" alt="">
           </el-upload>
@@ -182,7 +182,7 @@
         return this.$Tool.getEnumTextByValue(enumName, value);
       },
       getSelectRow(row) {
-        this.$refs.form.resetFields();
+//        this.$refs.form.resetFields();
         this.$data.form.articleId = row.id;
         this.$data.form.articleName = row.title;
         this.$data.form.articleUrl = row.url;
@@ -190,12 +190,15 @@
         this.$data.dialogTableVisible = false;
       },
       changeFormType(type) {
-        this.$refs.form.resetFields();
+//        this.$refs.form.resetFields();
         this.$data.form.type = type;
         this.$data.form.articleId = null;
         this.$data.form.articleName = '';
         this.$data.form.articleUrl = '';
         this.$data.form.outUrl = '';
+        this.$nextTick(() => {
+          this.submitForm();
+        });
       },
       addTableList() {
         this.$data.isAdd = true;
@@ -268,6 +271,7 @@
             if (this.$data.form.type === 2) {
               this.$data.form.url = this.$data.form.outUrl;
             }
+            this.$data.form.createrId = this.$userLogin.getLoginInfo().userId;
             let submitUrl = this.$data.isAdd ? '/banner/bannerAdd' : '/banner/bannerModify';
             let res = await this.$http.post(submitUrl, {
               ...this.$data.form

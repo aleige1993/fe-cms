@@ -147,6 +147,7 @@
             if (this.$data.isAdd) {
               this.$data.form.url = window.location.origin + '/#/index/articleDetail?noaction=true&id=';
             }
+            this.$data.form.createrId = this.$userLogin.getLoginInfo().userId;
             let submitUrl = this.$data.isAdd ? '/article/articleAdd' : '/article/articleModify';
             let res = await this.$http.post(submitUrl, {
               ...this.$data.form

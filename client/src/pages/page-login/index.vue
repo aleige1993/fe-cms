@@ -2,13 +2,12 @@
   <div id="page-login">
     <div class="top-bar">
       <div class="login-container">
-        <router-link :to="{name: 'login'}" class="logo"></router-link>
+        <span class="logo">内容发布系统</span>
       </div>
     </div>
     <div class="login-area">
       <div class="left-circle"></div>
       <div class="right-circle"></div>
-
       <div class="login-container relative">
         <div class="login-box">
           <div class="shadow"></div>

@@ -1,7 +1,7 @@
 <template>
   <div class="common-topbar">
-    <router-link v-if="loginInfo.isInit === '0'" :to="{path: '/index'}" class="logo"></router-link>
-    <span v-else class="logo"></span>
+    <!--<router-link v-if="loginInfo.isInit === '0'" :to="{path: '/index'}" class="logo"></router-link>-->
+    <span class="logo">内容发布系统</span>
     <div class="right-actions">
       <ul v-if="isLogin">
         <li v-if="loginInfo.merchantInfo">
@@ -75,7 +75,16 @@ export default {
       width: 184px;
       height: 24px;
       margin-top: 18px;
-      background: url(../../../../static/img/logo.png) no-repeat;
+      line-height: 24px;
+      font-size: 20px;
+      &:before {
+        content: '';
+        display: inline-block;
+        vertical-align: top;
+        width: 50px;
+        height: 24px;
+        background: url(../../../../static/img/logo.png) no-repeat;
+      }
     }
     .right-actions{
       float: right;
