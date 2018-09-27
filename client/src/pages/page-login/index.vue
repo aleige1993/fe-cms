@@ -61,8 +61,8 @@
         loading: false,
         errorInfo: '',
         loginForm: {
-          loginName: 'superadmin',
-          loginPwd: '123456'
+          loginName: '',
+          loginPwd: ''
         }
       };
     },

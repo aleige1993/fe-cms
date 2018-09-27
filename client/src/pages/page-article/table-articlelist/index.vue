@@ -77,14 +77,16 @@
           author: {required: true, message: '作者不能为空', trigger: 'blur' },
           content: {required: true, message: '内容不能为空', trigger: 'blur' }
         },
-        searchForm: {
-          'title': '',
-          'author': ''
-        },
+        searchForm: {},
         tableData: [],
         isAdd: true,
         dialogFormVisible: false,
-        form: {},
+        form: {
+          title: '',
+          author: '',
+          abstract: '',
+          content: ''
+        },
         loading: false
       }
     },
@@ -105,9 +107,9 @@
       addTableList() {
         this.$data.isAdd = true;
         this.$data.dialogFormVisible = true;
-//        this.$nextTick(() => {
-//          this.$refs.form.resetFields();
-//        });
+        this.$nextTick(() => {
+          this.$refs.form.resetFields();
+        });
       },
       editTableList(row) {
         this.$data.isAdd = false;
