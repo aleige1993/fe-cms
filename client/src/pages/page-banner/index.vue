@@ -4,8 +4,8 @@
     <div class="element-breadcrumb">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item><router-link to="/index">首页</router-link></el-breadcrumb-item>
-        <el-breadcrumb-item><router-link to="/index/headlineList">头条管理</router-link></el-breadcrumb-item>
-        <el-breadcrumb-item>头条列表</el-breadcrumb-item>
+        <el-breadcrumb-item><router-link to="/index/bannerList">banner管理</router-link></el-breadcrumb-item>
+        <el-breadcrumb-item>banner列表</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <el-form :inline="true" :model="searchForm" class="demo-form-inline" size="mini">
@@ -56,6 +56,7 @@
       </el-table-column>
       <el-table-column prop="gmtCreate"  width="160" label="创建时间"></el-table-column>
       <el-table-column prop="gmtUpdate"  width="160" label="更新时间"></el-table-column>
+      <el-table-column prop="sequence"  width="180" label="排序"></el-table-column>
       <el-table-column prop="isUsed" label="状态">
         <template slot-scope="scope">
           <span>{{getEnumTextByValue('IsUsedEnum', scope.row.isUsed)}}</span>
@@ -71,7 +72,7 @@
 
     <el-dialog
       width="700px"
-      :title="isAdd ? '添加头条' : '编辑头条'"
+      :title="isAdd ? '添加banner' : '编辑banner'"
       :visible.sync="dialogFormVisible"
       :close-on-click-modal="false">
       <el-form ref="form" :model="form" :rules="rules" label-width="120px" size="mini">
@@ -121,6 +122,9 @@
             <el-radio v-for="item in this.$Tool.getEnumData('PcProcjetEnum')" :key="item.value" :label="item.value">{{item.text}}</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item label="排序" prop="sequence">
+          <el-input  placeholder="" v-model="form.sequence"></el-input>
+        </el-form-item>
         <el-form-item label="是否启用" prop="isUsed">
           <el-radio-group v-model="form.isUsed">
             <el-radio name="type" v-for="item in this.$Tool.getEnumData('IsUsedEnum')" :key="item.value" :label="item.value" :value="item.value">
@@ -158,6 +162,7 @@
           title: {required: true, message: '标题名称不能为空'},
           terminal: {required: true, message: '请选择发布终端'},
           appType: {required: true, message: '请选择终端项目'},
+          sequence: {required: true, message: '排序不能为空'},
           isUsed: {required: true, message: '请选择是否启用'},
         },
         tableData: [],
@@ -206,6 +211,7 @@
             title: '',
             terminal: null,
             appType: [],
+            sequence: '',
             isUsed: null
           }
         });
@@ -230,8 +236,8 @@
         }
       },
       deleteTableList(row) {
-        this.$confirm(`确认删除标题为"${row.title}"的头条？`).then(async () => {
-          let res = await this.$http.post('/headline/headlineDelete', {id: row.id});
+        this.$confirm(`确认删除标题为"${row.title}"的banner？`).then(async () => {
+          let res = await this.$http.post('/banner/bannerDelete', {id: row.id});
           if (res.success) {
             this.$notify.success({
               title: '提示',
@@ -245,7 +251,7 @@
         if (this.$data.searchForm.terminal === 2) {
           this.$data.searchForm.appType = this.$data.searchForm.pcType;
         }
-        let res = await this.$http.post('/headline/headlineList', {
+        let res = await this.$http.post('/banner/bannerList', {
           ...this.$data.searchForm
         });
         if (res.success) {
@@ -262,7 +268,7 @@
             if (this.$data.form.type === 2) {
               this.$data.form.url = this.$data.form.outUrl;
             }
-            let submitUrl = this.$data.isAdd ? '/headline/headlineAdd' : '/headline/headlineModify';
+            let submitUrl = this.$data.isAdd ? '/banner/bannerAdd' : '/banner/bannerModify';
             let res = await this.$http.post(submitUrl, {
               ...this.$data.form
             });

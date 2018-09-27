@@ -12,6 +12,9 @@ router.get('/menuList', function (req, res, next) {
   }, {
     "name": "头条管理",
     "url": "/index/headlineList"
+  }, {
+    "name": "banner管理",
+    "url": "/index/bannerList"
   }];
   res.send(formatResult.success(menuList));
 });

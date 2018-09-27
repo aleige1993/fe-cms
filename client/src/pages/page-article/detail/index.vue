@@ -1,8 +1,8 @@
-
 <template>
-  <div id="page-article-detail">
-    <!--<h1>{{detail.title}}</h1>-->
-    <div v-html="detail.content"></div>
+  <div id="page-article-detail" class="el-form-item__content w-e-text-container">
+    <h1>{{detail.title}}</h1>
+    <h2>{{detail.author}} {{detail.gmtCreate}}</h2>
+    <div class="w-e-text" v-html="detail.content"></div>
   </div>
 </template>
 
@@ -22,3 +22,7 @@
     }
   }
 </script>
+
+<style type="text/css">
+  @import "../../../../static/css/wangeditor";
+</style>

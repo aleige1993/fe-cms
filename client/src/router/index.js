@@ -17,6 +17,8 @@ export default new Router({
         {path: 'articleDetail', component: resolve => { require(['@/pages/page-article/detail'], resolve) }},
         // 头条管理
         {path: 'headlineList', component: resolve => { require(['@/pages/page-headline'], resolve) }},
+        // banner管理
+        {path: 'bannerList', component: resolve => { require(['@/pages/page-banner'], resolve) }}
       ]
     }
   ],

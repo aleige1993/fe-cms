@@ -23,5 +23,6 @@ var controllerBaseUrl =  './controller/';
 app.use('/common', require(controllerBaseUrl + 'common'));
 app.use('/article', require(controllerBaseUrl + 'ScCms/CmsArticle'));
 app.use('/headline', require(controllerBaseUrl + 'ScCms/CmsHeadline'));
+app.use('/banner', require(controllerBaseUrl + 'ScCms/CmsBanner'));
 
 module.exports = app;
