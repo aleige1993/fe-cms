@@ -3,8 +3,8 @@
     <top-bar v-if="!noaction"></top-bar>
     <div class="wrap">
       <left-nav v-if="!noaction" class="layout-left"></left-nav>
-      <div :class="{layout: !noaction}">
-        <div class="layout-main">
+      <div :class="{'layout': !noaction}">
+        <div :class="{'layout-main': !noaction}">
           <router-view></router-view>
         </div>
       </div>
