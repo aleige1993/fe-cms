@@ -1,5 +1,5 @@
 /* jshint indent: 2 */
-
+var dateTime = require('../../utils/dateTime');
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('CmsAdvertisement', {
     id: {
@@ -52,12 +52,26 @@ module.exports = function(sequelize, DataTypes) {
     gmtCreate: {
       field: 'gmt_create',
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      get() {
+        if (this.getDataValue('gmtCreate')) {
+          return dateTime.dateTimeToString(this.getDataValue('gmtCreate'));
+        } else {
+          return null;
+        }
+      }
     },
     gmtUpdate: {
       field: 'gmt_update',
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      get() {
+        if (this.getDataValue('gmtUpdate')) {
+          return dateTime.dateTimeToString(this.getDataValue('gmtUpdate'));
+        } else {
+          return null;
+        }
+      }
     },
     createrId: {
       field: 'creater_id',

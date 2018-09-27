@@ -71,15 +71,20 @@
           <div v-if="scope.row.isUsed==1">
             <el-button
               size="mini"
+              type="warning"
+              @click="handleSee(scope, scope.row.id)">查看
+            </el-button>
+            <el-button
+              size="mini"
               type="success"
-              @click="handleEdit(scope.$index, scope.row.id)">编辑
+              @click="handleEdit(scope, scope.row.id)">编辑
             </el-button>
           </div>
           <div v-else>
             <el-button
               size="mini"
               type="warning"
-              @click="handleSee(scope.$index, scope.row.id)">查看
+              @click="handleSee(scope.row, scope.row.id)">查看
             </el-button>
             <el-button
               size="mini"
@@ -97,6 +102,7 @@
           <el-select size="medium" v-model="Form.location" placeholder="请选择位置">
             <el-option label="1" value="1"></el-option>
             <el-option label="2" value="2"></el-option>
+            <el-option label="3" value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="标题" prop="title">
@@ -113,7 +119,6 @@
             <i v-else class="el-icon-plus  avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-
         <el-form-item label="外链URL" prop="url" v-if="Form.isOutUrl==1||Form.isOutUrl==''">
           <el-input style="width: 89%" size="medium" v-model="Form.url" placeholder="请输入URL"></el-input>
           <el-button type="primary" @click="changIsUrl(2)"> 不使用</el-button>
@@ -141,8 +146,11 @@
         <!--</el-checkbox-group>-->
         <!--</el-form-item>-->
         <el-form-item label="是否启用" prop="isUsed">
-          <el-radio v-model="Form.isUsed" label="1">启用</el-radio>
-          <el-radio v-model="Form.isUsed" label="2">禁用</el-radio>
+          <el-radio-group v-model="Form.isUsed">
+            <el-radio name="type" v-for="item in this.$Tool.getEnumData('IsUsedEnum')" :key="item.value" :label="item.value" :value="item.value">
+              {{item.text}}
+            </el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -181,7 +189,7 @@
             {required: true, message: '请选择是否开启', trigger: 'change'}
           ],
           url: [
-            {required: true, message: '请输入外链接', trigger: 'change'}
+            {required: true, message: '请输入外链接', trigger: 'blur'}
           ]
         },
         isouturl: true,
@@ -207,35 +215,16 @@
           title: "",
           isUsed: "",
 //        terminal: ""
-        },
-        terminal: [
-          {
-            name: "移动端",
-            val: 1
-          },
-          {
-            name: "电脑端",
-            val: 2
-          }
-        ],
-        isUsed: [
-          {
-            name: "启用",
-            val: "1"
-          },
-          {
-            name: "禁用",
-            val: "2"
-          }
-        ]
+        }
       };
     },
     methods: {
       changIsUrl(index) {
         this.$data.Form.isOutUrl = index;
+        this.$data.Form.url = '';
       },
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
+      resetForm() {
+        this.$refs.Form.resetFields();
         this.$data.dialogFormVisible = false;
       },
       async onSubmit() {
@@ -245,8 +234,8 @@
         }
       },
       onAdvertAdd() {
-        this.$data.dialogFormVisible = true;
         this.$data.isAdd = true;
+        this.$data.dialogFormVisible = true;
         this.$nextTick(() => {
           this.$refs.Form.resetFields();
         });
@@ -270,20 +259,25 @@
         this.$data.Form.content = content;
       },
 
-
-      async handleEdit(index, id) {
+      handleSee(data){
+        window.open(data.row.url);
+      },
+      handleEdit(data, id) {
         if (id) {
           this.$data.isAdd = false;
           this.$data.dialogFormVisible = true;
-          let res = await this.$http.get('/advert/advertList', {'id': id});
-          if (res.success) {
-            this.$data.Form = res.body;
-          }
+          this.$nextTick(async () => {
+            this.$refs.Form.resetFields();
+            let res = await this.$http.get('/advert/advertList', {'id': id});
+            if (res.success) {
+              this.$data.Form = res.body;
+            }
+          });
         }
       },
       async submitForm() {
         this.$data.loading = true;
-        var url = this.$data.isAdd ? '/advert/advertAdd' : '/advert/advertUpdate';
+        let face = this.$data.isAdd ? '/advert/advertAdd' : '/advert/advertUpdate';
         if (this.$data.Form.existLocationId) {
           let resupdata = await this.$http.post('/advert/advertUpdateLocation', {
             location: this.$data.Form.existLocationId,
@@ -291,13 +285,11 @@
           });
         }
         if (this.$data.Form.isOutUrl == "2") {
-          this.$data.Form.autoUrl = window.location.origin + '/#/index/articleDetail?noaction=true&id=';
+          this.$data.Form.autoUrl = window.location.origin + '/#/index/advertDetail?noaction=true&id=';
         }
-        let res = await this.$http.post(url, this.$data.Form);
+        let res = await this.$http.post(face, this.$data.Form);
         if (res.success) {
           this.$data.dialogFormVisible = false;
-//          this.$refs.Form.resetFields();
-//          this.$data.Form = {};
           this.$data.Form.isOutUrl = 1;
           this.$notify.success({
             title: '提示',
@@ -307,9 +299,8 @@
         }
         this.$data.loading = false;
       },
-      submitData(formName) {
-        console.log(this.$data.Form);
-        this.$refs[formName].validate(async (valid) => {
+      submitData() {
+        this.$refs.Form.validate(async (valid) => {
           if (valid) {
             let res = await this.$http.get('/advert/existLocation', {location: this.$data.Form.location});
             if (res.success && res.body) {
@@ -330,19 +321,26 @@
           this.$data.tableData = res.body;
         }
       },
-      async handleDelete(index, id) {
-        let res = await  this.$http.post('/advert/advertDelete', {'id': id});
-        if (res.success && res.body) {
-          this.$confirm(`确定删除吗？`).then(() => {
+       handleDelete(index, id) {
+        this.$confirm(`确定删除此条数据吗？`).then(async() => {
+          let res = await  this.$http.post('/advert/advertDelete', {'id': id});
+          if (res.success && res.body) {
             this.$notify({
               title: '提示',
               message: '删除成功！',
               type: 'success'
             });
             this.getAdvert();
-          }).catch(() => {
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
           });
-        }
+        });
+
+
+
       }
     },
     mounted() {

@@ -9,12 +9,16 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     global: {
-      menuList: []
+      menuList: [],
+      enumList: [],
     }
   },
   getters: {
     menuList(state) {
       return state.global.menuList;
+    },
+    enumList(state) {
+      return state.global.enumList;
     }
   },
   actions,

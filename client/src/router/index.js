@@ -13,7 +13,13 @@ export default new Router({
       children: [
         { path: '/', component: resolve => { require(['@/pages/page-home'], resolve) }},
         { path: 'advert', component: resolve => { require(['@/pages/page-advert'], resolve)}},
-        { path: 'articleList', component: resolve => { require(['@/pages/page-article'], resolve) }}
+        { path: 'advertDetail', component: resolve => { require(['@/pages/page-advert/details'], resolve)}},//广告详情
+        { path: 'guided', component: resolve => { require(['@/pages/page-guided'], resolve)}},//引导页
+        // 文章管理
+        {path: 'articleList', component: resolve => { require(['@/pages/page-article/list'], resolve) }},
+        {path: 'articleDetail', component: resolve => { require(['@/pages/page-article/detail'], resolve) }},
+        // 头条管理
+        {path: 'headlineList', component: resolve => { require(['@/pages/page-headline'], resolve) }},
       ]
     }
   ],

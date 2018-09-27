@@ -1,9 +1,9 @@
 <template>
   <div id="page-index">
-    <top-bar></top-bar>
+    <top-bar v-if="!noaction"></top-bar>
     <div class="wrap">
-      <left-nav class="layout-left"></left-nav>
-      <div class="layout">
+      <left-nav v-if="!noaction" class="layout-left"></left-nav>
+      <div :class="{layout: !noaction}">
         <div class="layout-main">
           <router-view></router-view>
         </div>
@@ -25,18 +25,15 @@
       'top-bar': Topbar,
       LeftNav
     },
+    computed: {
+      noaction() {
+        return this.$route.query.noaction;
+      }
+    },
     methods: {
-      initMenuList() {
-        this.$store.dispatch('setMenuList', [{
-          "name": "首页",
-          "url": "/index"
-        }, {
-          "name": "广告管理列表",
-          "url": "/advert"
-        }, {
-          "name": "文章管理",
-          "url": "/index/articleList"
-        }]);
+      async initMenuList() {
+        let res = await this.$http.get('/common/menuList', {});
+        this.$store.dispatch('setMenuList', res.body);
       }
     },
     mounted() {

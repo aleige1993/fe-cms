@@ -5,22 +5,24 @@ var sequelize = require('sequelize');
 var connection = require('../../mysql/connection/ScCms');
 var formactResult = require('../../utils/formactResult');
 var dateTime = require('../../utils/dateTime');
-var CmsArticle = require('../../model/ScCms/CmsArticle');
-var article = CmsArticle(connection, sequelize);
+var CmsHeadline = require('../../model/ScCms/CmsHeadline');
+var headline = CmsHeadline(connection, sequelize);
 
-router.post('/articleList', (req, res, next) => {
+router.post('/headlineList', (req, res, next) => {
   var id = req.body.id;
   if (id) {
-    article.findOne({'where': {'id': id}}).then(function (result) {
+    headline.findOne({'where': {'id': id}}).then(function (result) {
       res.send(formactResult.success(result));
     }).catch(function (result) {
       res.send(formactResult.error('获取失败', result));
     });
   } else {
-    article.findAll({
+    headline.findAll({
       'where': {
         'title': {$like: '%' + (req.body.title || '') + '%'},
-        'author': {$like: '%' + (req.body.author || '') + '%'}
+        'terminal': {$like: '%' + (req.body.terminal || '') + '%'},
+        'appType': {$like: '%' + (req.body.appType || '') + '%'},
+        'isUsed': {$like: '%' + (req.body.isUsed || '') + '%'},
       },
       'order': [['gmtCreate', 'DESC']]
     }).then(function (result) {
@@ -32,22 +34,18 @@ router.post('/articleList', (req, res, next) => {
   }
 });
 
-router.post('/articleAdd', function(req, res, next) {
+router.post('/headlineAdd', function(req, res, next) {
   req.body.gmtCreate = dateTime.getCurrentTime();
-  article.create(req.body).then(function (result) {
-    article.update({url: result.url + result.id}, {'where': {'id': result.id}}).then(function () {
-      res.send(formactResult.success());
-    }).catch(function () {
-      res.send(formactResult.error('添加失败', result));
-    })
+  headline.create(req.body).then(function (result) {
+    res.send(formactResult.success());
   }).catch(function (result) {
     res.send(formactResult.error('添加失败', result));
   });
 });
 
-router.post('/articleModify', function(req, res, next) {
+router.post('/headlineModify', function(req, res, next) {
   req.body.gmtUpdate = dateTime.getCurrentTime();
-  article.update(req.body, {'where': {'id': req.body.id}}).then(function () {
+  headline.update(req.body, {'where': {'id': req.body.id}}).then(function () {
     res.send(formactResult.success());
   }).catch(function (result) {
     res.send(formactResult.error('修改失败', result));

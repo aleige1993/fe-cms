@@ -1,0 +1,285 @@
+
+<template>
+  <div id="page-headline-list">
+    <div class="element-breadcrumb">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item><router-link to="/index">首页</router-link></el-breadcrumb-item>
+        <el-breadcrumb-item><router-link to="/index/headlineList">头条管理</router-link></el-breadcrumb-item>
+        <el-breadcrumb-item>头条列表</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+    <el-form :inline="true" :model="searchForm" class="demo-form-inline" size="mini">
+      <el-form-item label="标题">
+        <el-input v-model="searchForm.title" placeholder=""></el-input>
+      </el-form-item>
+      <el-form-item label="终端">
+        <el-select style="width: 100px"  v-model="searchForm.terminal" placeholder="请选择">
+          <el-option label="全部" value="">全部</el-option>
+          <el-option v-for="item in this.$Tool.getEnumData('TerminalTypeEnum')" :key="item.value" :label="item.text" :value="item.value"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item v-if="searchForm.terminal === 1"  label="">
+        <el-select v-model="searchForm.appType" placeholder="请选择">
+          <el-option label="全部" value="">全部</el-option>
+          <el-option v-for="item in this.$Tool.getEnumData('AppProcjectEnum')" :key="item.value" :label="item.text" :value="item.value">{{item.text}}</el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item v-if="searchForm.terminal === 2" label="">
+        <el-select v-model="searchForm.pcType" placeholder="请选择">
+          <el-option label="全部" value="">全部</el-option>
+          <el-option  v-for="item in this.$Tool.getEnumData('PcProcjetEnum')" :key="item.value" :label="item.text" :value="item.value">{{item.text}}</el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="状态">
+        <el-select style="width: 100px" v-model="searchForm.isUsed" placeholder="请选择">
+          <el-option label="全部" value="">全部</el-option>
+          <el-option v-for="item in this.$Tool.getEnumData('IsUsedEnum')" :key="item.value" :label="item.text" :value="item.value"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="tableList">查询</el-button>
+      </el-form-item>
+      <el-button  size="mini" type="primary" @click="addTableList">添加</el-button>
+    </el-form>
+    <el-table :data="tableData" border>
+      <el-table-column prop="title" label="标题" width="180"></el-table-column>
+      <el-table-column prop="url"  width="280" label="详情链接"></el-table-column>
+      <el-table-column prop="appType"  width="120" label="发布终端">
+        <template slot-scope="scope">
+          <span v-if="scope.row.terminal === 1">{{getEnumTextByValue('AppProcjectEnum', scope.row.appType)}}</span>
+          <span v-if="scope.row.terminal === 2">{{getEnumTextByValue('PcProcjetEnum', scope.row.appType)}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="gmtCreate"  width="180" label="创建时间"></el-table-column>
+      <el-table-column prop="gmtUpdate"  width="180" label="更新时间"></el-table-column>
+      <el-table-column prop="isUsed" label="状态">
+        <template slot-scope="scope">
+          <span>{{getEnumTextByValue('IsUsedEnum', scope.row.isUsed)}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="180">
+        <template slot-scope="scope">
+          <el-button size="mini" @click="editTableList(scope.row)">编辑</el-button>
+          <el-button size="mini" type="danger" @click="deleteTableList(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <el-dialog
+      width="700px"
+      :title="isAdd ? '添加头条' : '编辑头条'"
+      :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px" size="mini">
+        <el-form-item v-if="form.type === 1" label="选择文章" prop="articleId">
+          <div style="display: flex">
+            <el-input disabled style="margin-right: 10px" v-model="form.articleName" auto-complete="off"></el-input>
+            <input type="hidden" v-model="form.articleId"/>
+            <el-button @click="dialogTableVisible = true" type="primary">选择</el-button>
+          </div>
+        </el-form-item>
+        <el-form-item v-if="form.type === 1" label="外部链接" prop="">
+          <div style="display: flex">
+            <el-input disabled style="margin-right: 10px"  v-model="form.outUrl" auto-complete="off"></el-input>
+            <el-button type="primary" @click="form.type = 2">使用</el-button>
+          </div>
+        </el-form-item>
+        <el-form-item v-if="form.type === 2" label="外部链接" prop="outUrl">
+          <div style="display: flex">
+            <el-input style="margin-right: 10px"  v-model="form.outUrl" auto-complete="off"></el-input>
+            <el-button  type="primary" @click="form.type = 1">不使用</el-button>
+          </div>
+        </el-form-item>
+        <el-form-item label="封面" prop="coverPhotoUrl">
+          <el-upload
+            :action="this.$config.HTTPBOSSURL + '/common/upload'"
+            :show-file-list="false"
+            :on-success="uploadSuccess">
+            <div v-if="!form.coverPhotoUrl">
+              <el-button size="mini" type="primary">点击上传</el-button>
+            </div>
+            <img v-else="" height="90" :src="form.coverPhotoUrl" alt="">
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="标题名称" prop="title">
+          <el-input  placeholder="" v-model="form.title"></el-input>
+        </el-form-item>
+        <el-form-item label="发布终端类型" prop="terminal">
+          <el-select v-model="form.terminal" placeholder="请选择">
+            <el-option v-for="item in this.$Tool.getEnumData('TerminalTypeEnum')" :key="item.value" :label="item.text" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="form.terminal" label="终端项目" prop="appType">
+          <el-radio-group v-if="form.terminal === 1" v-model="form.appType">
+            <el-radio v-for="item in this.$Tool.getEnumData('AppProcjectEnum')" :key="item.value" :label="item.value">{{item.text}}</el-radio>
+          </el-radio-group>
+          <el-radio-group v-if="form.terminal === 2" v-model="form.appType">
+            <el-radio v-for="item in this.$Tool.getEnumData('PcProcjetEnum')" :key="item.value" :label="item.value">{{item.text}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="是否启用" prop="isUsed">
+          <el-radio-group v-model="form.isUsed">
+            <el-radio name="type" v-for="item in this.$Tool.getEnumData('IsUsedEnum')" :key="item.value" :label="item.value" :value="item.value">
+              {{item.text}}
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitForm" :loading="loading">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      width="900px"
+      title="选择文章"
+      :visible.sync="dialogTableVisible"
+      :close-on-click-modal="false">
+      <table-article-list :selectTable="true" @on-select="getSelectRow"></table-article-list>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+  import tableArticleList from '../page-article/table-articlelist';
+  export default {
+    name: 'page-headline-list',
+    data() {
+      return {
+        rules: {
+          articleId: {required: true, message: '请选择文章'},
+          url: {required: true, message: '外部链接不能为空'},
+          coverPhotoUrl: {required: true, message: '请选择封面'},
+          title: {required: true, message: '标题名称不能为空'},
+          terminal: {required: true, message: '请选择发布终端'},
+          appType: {required: true, message: '请选择终端项目'},
+          isUsed: {required: true, message: '请选择是否启用'},
+        },
+        tableData: [],
+        searchForm: {},
+        isAdd: true,
+        dialogFormVisible: false,
+        form: {
+          type: 1,
+          articleId: null,
+          articleName: '',
+          outUrl: '',
+          coverPhotoUrl: '',
+          appType: []
+        },
+        loading: false,
+        dialogTableVisible: false
+      }
+    },
+    components: {
+      tableArticleList
+    },
+    watch: {
+      'form.type'(newVal, oldVal) {
+        this.$data.form.articleId = null;
+        this.$data.form.articleName = '';
+        this.$data.form.articleUrl = '';
+        this.$data.form.outUrl = '';
+//        if (newVal === 1 && newVal === 2) {
+//          this.$data.form.outUrl = '';
+//        }
+      }
+//      'form.terminal'() {
+//        this.$data.form.appType = [];
+//      }
+    },
+    methods: {
+      getEnumTextByValue(enumName, value) {
+        return this.$Tool.getEnumTextByValue(enumName, value);
+      },
+      getSelectRow(row) {
+        this.$data.form.articleId = row.id;
+        this.$data.form.articleName = row.title;
+        this.$data.form.articleUrl = row.url;
+        this.$data.dialogTableVisible = false;
+      },
+      addTableList() {
+        this.$data.isAdd = true;
+        this.$data.dialogFormVisible = true;
+        this.$nextTick(() => {
+          this.$refs.form.resetFields();
+        });
+      },
+      async editTableList(row) {
+        let res = await this.$http.post('/article/articleList', {
+          id: row.articleId
+        });
+        if (res.success) {
+          if (row.type === 1) {
+            row.articleName = res.body.title;
+          }
+          if (row.type === 2) {
+            row.outUrl = row.url;
+          }
+          this.$data.isAdd = false;
+          this.$data.dialogFormVisible = true;
+          this.$nextTick(() => {
+            this.$refs.form.resetFields();
+            this.$data.form = Object.assign({}, row);
+          });
+        }
+      },
+      deleteTableList(row) {
+        this.$confirm(`确认删除标题为"${row.title}"的文章？`).then(async () => {
+          let res = await this.$http.post('/article/articleDelete', {id: row.id});
+          if (res.success) {
+            this.$notify.success({
+              title: '提示',
+              message: '删除成功'
+            });
+            this.tableList();
+          }
+        }).catch(() => {});
+      },
+      async tableList() {
+        if (this.$data.searchForm.terminal === 2) {
+          this.$data.searchForm.appType = this.$data.searchForm.pcType;
+        }
+        let res = await this.$http.post('/headline/headlineList', {
+          ...this.$data.searchForm
+        });
+        if (res.success) {
+          this.$data.tableData = res.body;
+        }
+      },
+      submitForm() {
+        this.$refs['form'].validate(async (valid) => {
+          if (valid) {
+            this.$data.loading = true;
+            if (this.$data.form.type === 1) {
+              this.$data.form.url = this.$data.form.articleUrl;
+            }
+            if (this.$data.form.type === 2) {
+              this.$data.form.url = this.$data.form.outUrl;
+            }
+            let submitUrl = this.$data.isAdd ? '/headline/headlineAdd' : '/headline/headlineModify';
+            let res = await this.$http.post(submitUrl, {
+              ...this.$data.form
+            });
+            this.$data.loading = false;
+            if (res.success) {
+              this.$data.dialogFormVisible = false;
+              this.$notify.success({
+                title: '提示',
+                message: this.$data.isAdd ? '添加成功' : '修改成功'
+              });
+              this.tableList();
+            }
+          }
+        });
+      },
+      uploadSuccess(file) {
+        this.$data.form.coverPhotoUrl = file.body.url;
+      }
+    },
+    mounted() {
+      this.tableList();
+    }
+  }
+</script>

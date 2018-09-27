@@ -1,8 +1,7 @@
 /* jshint indent: 2 */
 var dateTime = require('../../utils/dateTime');
-
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('CmsArticle', {
+  return sequelize.define('CmsGuided', {
     id: {
       field: 'id',
       type: DataTypes.INTEGER(11),
@@ -10,35 +9,35 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true,
       autoIncrement: true
     },
+    location: {
+      field: 'location',
+      type: DataTypes.INTEGER(4),
+      allowNull: false
+    },
     title: {
       field: 'title',
       type: DataTypes.STRING,
       allowNull: false
     },
-    author: {
-      field: 'author',
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    abstract: {
-      field: 'abstract',
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    content: {
-      field: 'content',
+    imageUrl: {
+      field: 'image_url',
       type: DataTypes.TEXT,
       allowNull: false
     },
-    url: {
-      field: 'url',
-      type: DataTypes.STRING,
-      allowNull: true
+    appType: {
+      field: 'app_type',
+      type: DataTypes.INTEGER(4),
+      allowNull: false
+    },
+    isUsed: {
+      field: 'is_used',
+      type: DataTypes.INTEGER(4),
+      allowNull: false
     },
     gmtCreate: {
       field: 'gmt_create',
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
       get() {
         if (this.getDataValue('gmtCreate')) {
           return dateTime.dateTimeToString(this.getDataValue('gmtCreate'));
@@ -70,7 +69,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     }
   }, {
-    tableName: 'cms_article',
+    tableName: 'cms_guided',
     timestamps: false,
     freezeTableName: true
   });
