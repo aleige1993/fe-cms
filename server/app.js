@@ -25,5 +25,6 @@ app.use('/article', require(controllerBaseUrl + 'ScCms/CmsArticle'));
 app.use('/guided', require(controllerBaseUrl + 'ScCms/CmsGuided'));
 app.use('/advert', require(controllerBaseUrl + 'ScCms/CmsAdvertisement'));
 app.use('/headline', require(controllerBaseUrl + 'ScCms/CmsHeadline'));
+app.use('/banner', require(controllerBaseUrl + 'ScCms/CmsBanner'));
 
 module.exports = app;

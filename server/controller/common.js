@@ -13,13 +13,15 @@ router.get('/menuList', function (req, res, next) {
     "name": "头条管理",
     "url": "/index/headlineList"
   }, {
+    "name": "banner管理",
+    "url": "/index/bannerList"
+  }, {
     "name": "广告管理",
     "url": "/index/advert"
   },{
     "name": "引导页管理",
     "url": "/index/guided"
-  }
-  ];
+  }];
   res.send(formatResult.success(menuList));
 });
 
