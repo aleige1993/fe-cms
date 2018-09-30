@@ -17,8 +17,8 @@ router.post('/headlineList', (req, res, next) => {
       res.send(formactResult.error('获取失败', result));
     });
   } else {
-    var currentPage = req.body.currentPage;
-    var pageSize = req.body.pageSize;
+    var currentPage = req.body.currentPage || 1;
+    var pageSize = req.body.pageSize || 999999999;
     headline.findAndCountAll({
       'where': {
         'title': {$like: '%' + (req.body.title || '') + '%'},

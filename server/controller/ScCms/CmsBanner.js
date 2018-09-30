@@ -17,13 +17,17 @@ router.post('/bannerList', (req, res, next) => {
       res.send(formactResult.error('获取失败', result));
     });
   } else {
-    banner.findAll({
+    var currentPage = req.body.currentPage || 1;
+    var pageSize = req.body.pageSize || 999999999;
+    banner.findAndCountAll({
       'where': {
         'title': {$like: '%' + (req.body.title || '') + '%'},
         'terminal': {$like: '%' + (req.body.terminal || '') + '%'},
         'appType': {$like: '%' + (req.body.appType || '') + '%'},
         'isUsed': {$like: '%' + (req.body.isUsed || '') + '%'},
       },
+      'offset': (currentPage - 1) * pageSize,
+      'limit': pageSize,
       'order': [['sequence', 'ASC']]
     }).then(function (result) {
       res.send(formactResult.success(result));
