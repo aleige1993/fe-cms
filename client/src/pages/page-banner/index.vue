@@ -37,11 +37,11 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="tableList">查询</el-button>
+        <el-button type="primary" @click="searchTableList">查询</el-button>
       </el-form-item>
       <el-button  size="mini" type="primary" @click="addTableList">添加</el-button>
     </el-form>
-    <el-table :data="tableData" border>
+    <el-table v-loading="tableLoading" :data="tableData" border :height="this.$Tool.getTableHeight()">
       <el-table-column prop="title" label="标题" width="180"></el-table-column>
       <el-table-column prop="url"  width="180" label="详情链接">
         <template slot-scope="scope">
@@ -69,6 +69,14 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      class="right"
+      @current-change="tableList"
+      layout="total, prev, pager, next, jumper"
+      :current-page="this.$data.searchForm.currentPage"
+      :page-size="this.$config.PAGE_SIZE"
+      :total="tableDataCount">
+    </el-pagination>
 
     <el-dialog
       width="700px"
@@ -166,11 +174,15 @@
           isUsed: {required: true, message: '请选择是否启用'},
         },
         tableData: [],
-        searchForm: {},
+        tableDataCount: 0,
+        searchForm: {
+          pageSize: this.$config.PAGE_SIZE
+        },
         isAdd: true,
         dialogFormVisible: false,
         form: {},
         loading: false,
+        tableLoading: false,
         dialogTableVisible: false
       }
     },
@@ -250,15 +262,22 @@
           }
         }).catch(() => {});
       },
-      async tableList() {
+      searchTableList() {
+        this.tableList();
+      },
+      async tableList(currentPage = 1) {
         if (this.$data.searchForm.terminal === 2) {
           this.$data.searchForm.appType = this.$data.searchForm.pcType;
         }
+        this.$data.tableLoading = true;
+        this.$data.searchForm.currentPage = currentPage;
         let res = await this.$http.post('/banner/bannerList', {
           ...this.$data.searchForm
         });
+        this.$data.tableLoading = false;
         if (res.success) {
-          this.$data.tableData = res.body;
+          this.$data.tableDataCount = res.body.count;
+          this.$data.tableData = res.body.rows;
         }
       },
       submitForm() {
