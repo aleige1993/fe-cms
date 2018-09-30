@@ -9,11 +9,12 @@
         <el-input v-model="searchForm.author" placeholder=""></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="tableList">查询</el-button>
+        <el-button type="primary" @click="searchTableList">查询</el-button>
       </el-form-item>
       <el-button v-if="!selectTable" size="mini" type="primary" @click="addTableList">添加</el-button>
     </el-form>
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table v-loading="tableLoading" :data="tableData" border style="width: 100%" :height="this.$Tool.getTableHeight()">
+      <!--<el-table-column prop="id" label="标题" width="180"></el-table-column>-->
       <el-table-column prop="title" label="标题" width="180"></el-table-column>
       <el-table-column prop="author"  width="100" label="作者"></el-table-column>
       <el-table-column prop="url"  width="280" label="文章链接">
@@ -35,6 +36,14 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      class="right"
+      @current-change="tableList"
+      layout="total, prev, pager, next, jumper"
+      :current-page="this.$data.searchForm.currentPage"
+      :page-size="this.$config.PAGE_SIZE"
+      :total="tableDataCount">
+    </el-pagination>
 
     <el-dialog
       width="800px"
@@ -63,6 +72,7 @@
         <el-button type="primary" @click="submitForm" :loading="loading">确 定</el-button>
       </div>
     </el-dialog>
+
   </div>
 </template>
 
@@ -77,8 +87,11 @@
           author: {required: true, message: '作者不能为空', trigger: 'blur' },
           content: {required: true, message: '内容不能为空', trigger: 'blur' }
         },
-        searchForm: {},
+        searchForm: {
+          pageSize: this.$config.PAGE_SIZE
+        },
         tableData: [],
+        tableDataCount: 0,
         isAdd: true,
         dialogFormVisible: false,
         form: {
@@ -87,7 +100,8 @@
           abstract: '',
           content: ''
         },
-        loading: false
+        loading: false,
+        tableLoading: false
       }
     },
     components: {
@@ -134,12 +148,19 @@
       selectTableList(row) {
         this.$emit('on-select', row);
       },
-      async tableList() {
+      searchTableList() {
+        this.tableList();
+      },
+      async tableList(currentPage = 1) {
+        this.$data.tableLoading = true;
+        this.$data.searchForm.currentPage = currentPage;
         let res = await this.$http.post('/article/articleList', {
           ...this.$data.searchForm
         });
+        this.$data.tableLoading = false;
         if (res.success) {
-          this.$data.tableData = res.body;
+          this.$data.tableDataCount = res.body.count;
+          this.$data.tableData = res.body.rows;
         }
       },
       submitForm() {
