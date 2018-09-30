@@ -14,12 +14,8 @@
       </el-form-item>
       <el-form-item label="">
         <el-select size="medium" v-model="formadvert.appType" placeholder="选择终端">
-          <el-option
-            v-for="item in appType"
-            :key="item.val"
-            :label="item.name"
-            :value="item.val">
-          </el-option>
+          <el-option label="全部" value=""></el-option>
+          <el-option v-for="item in this.$Tool.getEnumData('AppProcjectEnum')" :key="item.value" :label="item.text" :value="item.value"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -63,6 +59,7 @@
 
       <el-table-column  label="操作" width="240">
         <template slot-scope="scope">
+          <div v-if="scope.row.isUsed==1">
             <el-button
               size="mini"
               type="warning"
@@ -73,14 +70,39 @@
               type="success"
               @click="handleEdit(scope, scope.row.id)">编辑
             </el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="guidedDel(scope.row.id)">删除
-            </el-button>
+            </div>
+            <div v-if="scope.row.isUsed==2">
+              <el-button
+                size="mini"
+                type="warning"
+                @click="handleSee(scope, scope.row.id)">查看
+              </el-button>
+              <el-button
+                size="mini"
+                type="success"
+                @click="handleEdit(scope, scope.row.id)">编辑
+              </el-button>
+              <el-button
+                size="mini"
+                type="danger"
+                @click="guidedDel(scope.row.id)">删除
+              </el-button>
+            </div>
         </template>
       </el-table-column>
     </el-table>
+
+    <div class="block ">
+      <el-pagination
+        background
+        @current-change="handleCurrentChange"
+        :current-page.sync="Form.page"
+        :page-size="Form.pageSize"
+        layout="total, prev, pager, next"
+        :total="total">
+      </el-pagination>
+    </div>
+
     <!--新增弹窗-->
     <el-dialog :title="isAdd?'引导页添加':'引导页修改'" :visible.sync="dialogFormVisible">
       <el-form size="mini" :model="Form" label-width="80px" :rules="rules" ref="Form" class="demo-ruleForm">
@@ -205,6 +227,7 @@
             {required: true, message: '请选择终端', trigger: 'change'}
           ]
         },
+        total:100,//总页数
         num:6,//最多可上传6张
         imgIndex:'',//默认查看图片索引
         innerVisible:false,//查看图片详情
@@ -239,7 +262,9 @@
           title:'',
           imageUrl:'',
           appType:'',
-          isUsed:''
+          isUsed:'',
+          page:1,//当前页
+          pageSize:10,//页条数
         },
         detail:'',//查看详情
         locationEnum: [{
@@ -252,6 +277,10 @@
       };
     },
     methods: {
+      handleCurrentChange(val){
+        console.log('当前页',val)
+        this.getGuidedAll(this.$data.Form);
+      },
       //多图上传删除
       multigraphRemove(file, fileList) {
         this.getImageMultigraph(fileList);
@@ -274,7 +303,6 @@
       getImageMultigraph(fileList){
         let arr=[];
         fileList.map((item,index)=>{
-          console.log('item',item);
           if(item.response){
             arr.push(item.response.body.url);
           }else{
@@ -282,8 +310,6 @@
           }
         })
         this.$data.imageMultigraph = arr.join(',');
-        console.log('arr',arr);
-        console.log('imageMultigraph',this.$data.imageMultigraph);
       },
       //多图上传成功
       multigraphSuccess(res,file,fileList) {
@@ -307,8 +333,10 @@
       },
       //新增
       async onGuidedAdd(){
+        console.log(123);
         this.$data.dialogFormVisible = true;
         this.$data.isAdd = true;
+        this.$data.Form.id = '';
         this.$nextTick(() => {
           this.$refs.Form.resetFields();
           this.$refs.multigraphUpload.clearFiles();
@@ -327,12 +355,10 @@
       submitData() {
         let index = this.$data.Form.location
         if(index==1){
-          //console.log(this.$data.fileList);
           this.$data.Form.imageUrl = this.$data.imageMultigraph
         }else {
           this.$data.Form.imageUrl = this.$data.imageSingle
         }
-        console.log('submitData',this.$data.Form);
         this.$refs.Form.validate(async(valid) => {
           if (valid) {
               let res = await this.$http.post('/guided/guidedLike',this.$data.Form);
@@ -355,6 +381,9 @@
       //提交参数
      async submitForm(){
         this.$data.loading = true;
+        if(this.$data.isAdd){
+          this.$data.Form.id = '';
+        }
         let url = this.$data.isAdd ? '/guided/GuidedAdd' : '/guided/guidedUpdate'
         let res = await this.$http.post(url,this.$data.Form);
         if(res.success && res.body){
@@ -367,15 +396,24 @@
             title: '提示',
             message: this.$data.isAdd ? '添加成功' : '修改成功'
           });
-          this.getGuidedAll();
+          if(this.$data.isAdd){
+            this.getGuidedAll(this.$data.Form);
+          }else {
+            this.$data.Form.id = '';
+            this.$data.formadvert.title = '';
+            this.$data.formadvert.appType = '';
+            this.getGuidedAll(this.$data.Form);
+          }
+
         }
        this.$data.loading = false;
       },
       //获取列表
-      async getGuidedAll(){
-        let res =await this.$http.get('/guided/guidedList',{});
+      async getGuidedAll(data){
+        let res =await this.$http.post('/guided/guidedList',data);
         if(res.success && res.body){
-          this.$data.tableData = res.body
+          this.$data.total = res.body.count;
+          this.$data.tableData = res.body.rows;
         }
       },
       //删除
@@ -385,7 +423,7 @@
             'id':id
           })
           if(res.success){
-            this.getGuidedAll();
+            this.getGuidedAll(this.$data.Form);
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -400,16 +438,16 @@
       },
       //迷糊查询
      async guidedFind(){
-         let res = await this.$http.post('/guided/guidedFind',this.$data.formadvert);
-         if(res.success&&res.body){
-           this.$data.tableData = res.body;
-         }
+         this.$data.Form.page = 1;
+         this.$data.Form.title=this.$data.formadvert.title;
+         this.$data.Form.appType=this.$data.formadvert.appType;
+         this.getGuidedAll(this.$data.Form);
       },
       //查看单条数据
       async handleSee(data,id){
         this.$data.detail='';
        this.$data.outerVisible = true;
-       let res = await this.$http.get('/guided/guidedList',{'id':id});
+       let res = await this.$http.post('/guided/guidedList',{'id':id});
        if(res.success){
           this.$data.detail = res.body;
           if(res.body.imageUrl){
@@ -424,10 +462,12 @@
           this.$data.isAdd = false;
           this.$data.dialogFormVisible = true;
           this.$data.fileList = [];
-          let res = await this.$http.get('/guided/guidedList',{'id':id});
+          let res = await this.$http.post('/guided/guidedList',{'id':id});
           if(res.success){
             let imagelist = [];
             this.$data.Form = res.body;
+            this.$data.Form.page = 1;
+            this.$data.Form.pageSize = 10;
             if(res.body.location == 1){
               imagelist = res.body.imageUrl.split(',');
               imagelist.forEach(function (item,index) {
@@ -446,7 +486,7 @@
       }
     },
     mounted() {
-      this.getGuidedAll();
+      this.getGuidedAll(this.$data.Form);
     }
   };
 </script>

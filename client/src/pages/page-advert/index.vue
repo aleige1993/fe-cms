@@ -14,11 +14,12 @@
       </el-form-item>
       <el-form-item label="">
         <el-select size="medium" v-model="formadvert.isUsed" placeholder="选择状态">
+          <el-option label="全部" value=""></el-option>
           <el-option
-            v-for="item in isUsed"
+            v-for="item in this.$Tool.getEnumData('IsUsedEnum')"
             :key="item.val"
-            :label="item.name"
-            :value="item.val">
+            :label="item.text"
+            :value="item.value">
           </el-option>
         </el-select>
       </el-form-item>
@@ -95,7 +96,16 @@
         </template>
       </el-table-column>
     </el-table>
-
+    <div class="block ">
+      <el-pagination
+        background
+        @current-change="handleCurrentChange"
+        :current-page.sync="Form.page"
+        :page-size="Form.pageSize"
+        layout="total, prev, pager, next"
+        :total="total">
+      </el-pagination>
+    </div>
     <el-dialog :title="isAdd?'广告页添加':'广告页修改'" :visible.sync="dialogFormVisible">
       <el-form size="medium" :model="Form" label-width="80px" :rules="rules" ref="Form" class="demo-ruleForm">
         <el-form-item label="位置" prop="location">
@@ -110,6 +120,7 @@
         </el-form-item>
         <el-form-item label="上传图片" prop="imageUrl">
           <el-upload
+            ref="upload"
             class="avatar-uploader"
             :action="this.$config.HTTPBOSSURL + '/common/upload'"
             :show-file-list="false"
@@ -120,13 +131,13 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="外链URL" prop="url" v-if="Form.isOutUrl==1||Form.isOutUrl==''">
-          <el-input style="width: 89%" size="medium" v-model="Form.url" placeholder="请输入URL"></el-input>
-          <el-button type="primary" @click="changIsUrl(2)"> 不使用</el-button>
+          <el-input style="width: 85%" size="medium" v-model="Form.url" placeholder="请输入URL"></el-input>
+          <el-button style="width: 14%" type="primary" @click="changIsUrl(2)"> 不使用</el-button>
         </el-form-item>
 
         <el-form-item label="外链URL" prop="" v-if="Form.isOutUrl==2">
-          <el-input style="width: 89%" size="medium" :disabled="Form.isOutUrl==2" placeholder="请输入URL"></el-input>
-          <el-button type="primary" @click="changIsUrl(1)">使用</el-button>
+          <el-input style="width: 85%" size="medium" :disabled="Form.isOutUrl==2" placeholder="请输入URL"></el-input>
+          <el-button style="width: 14%" type="primary" @click="changIsUrl(1)">使用</el-button>
         </el-form-item>
 
         <el-form-item label="内容" prop="content" v-if="Form.isOutUrl==2">
@@ -196,6 +207,7 @@
         imageUrl: '',
         isAdd: true,
         loading: false,
+        total:100,
         Form: {
           id: '',
           location: '',
@@ -208,6 +220,8 @@
           existLocationId: '',
           isOutUrl: 1,
           autoUrl: '',
+          page:1,
+          pageSize:10
         },
         dialogFormVisible: false,
         tableData: [],
@@ -219,25 +233,28 @@
       };
     },
     methods: {
+      handleCurrentChange(val){
+        this.getAdvert();
+      },
       changIsUrl(index) {
         this.$data.Form.isOutUrl = index;
         this.$data.Form.url = '';
       },
       resetForm() {
         this.$refs.Form.resetFields();
+        this.$refs.upload.clearFiles();
         this.$data.dialogFormVisible = false;
       },
       async onSubmit() {
-        let res = await this.$http.post('/advert/advertFind', this.$data.formadvert);
-        if (res.success) {
-          this.$data.tableData = res.body
-        }
+        this.$data.Form.page = 1;
+        this.getAdvert();
       },
       onAdvertAdd() {
         this.$data.isAdd = true;
         this.$data.dialogFormVisible = true;
         this.$nextTick(() => {
           this.$refs.Form.resetFields();
+          this.$refs.upload.clearFiles();
         });
       },
       handleAvatarSuccess(res, file) {
@@ -268,9 +285,11 @@
           this.$data.dialogFormVisible = true;
           this.$nextTick(async () => {
             this.$refs.Form.resetFields();
-            let res = await this.$http.get('/advert/advertList', {'id': id});
+            let res = await this.$http.post('/advert/advertList', {'id': id});
             if (res.success) {
               this.$data.Form = res.body;
+              this.$data.Form.page = 1;
+              this.$data.Form.pageSize = 10;
             }
           });
         }
@@ -287,6 +306,7 @@
         if (this.$data.Form.isOutUrl == "2") {
           this.$data.Form.autoUrl = window.location.origin + '/#/index/advertDetail?noaction=true&id=';
         }
+        this.$data.Form.id = this.$data.isAdd ? '' : this.$data.Form.id;
         let res = await this.$http.post(face, this.$data.Form);
         if (res.success) {
           this.$data.dialogFormVisible = false;
@@ -316,9 +336,18 @@
         });
       },
       async getAdvert() {
-        let res = await  this.$http.get('/advert/advertList', {});
+        console.log(this.$data.Form);
+        let data = {
+          page:this.$data.Form.page,
+          pageSize:this.$data.Form.pageSize,
+          title:this.$data.formadvert.title,
+          isUsed:this.$data.formadvert.isUsed
+        }
+
+        let res = await  this.$http.post('/advert/advertList',data);
         if (res.success) {
-          this.$data.tableData = res.body;
+          this.$data.total = res.body.count;
+          this.$data.tableData = res.body.rows;
         }
       },
        handleDelete(index, id) {

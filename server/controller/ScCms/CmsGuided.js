@@ -8,16 +8,25 @@ var dateTime = require('../../utils/dateTime');
 var CmsGuided = require('../../model/ScCms/CmsGuided');
 var guided =CmsGuided(connection,sequelize);
 
-router.get('/guidedList', function(req, res, next) {
-  var id = req.query.id;
-  if (id && id.length) {
+router.post('/guidedList', function(req, res, next) {
+  var id = req.body.id;
+  if (id) {
     guided.findOne({'where': {'id':id}}).then(function (result) {
       res.send(formactResult.success(result));
     }).catch(function (result) {
       res.send(formactResult.error('获取失败', result));
     });
   } else {
-    guided.findAll().then(function (result) {
+    guided.findAndCountAll(
+      {
+        where:{
+          'appType':{$like: '%'+(req.body.appType||'')+'%'},
+          'title':{ $like: '%'+(req.body.title||'')+'%'}
+        },
+        order:[['isUsed' , 'ASC']],
+        offset:(req.body.page/1 - 1) * req.body.pageSize/1,
+        limit:req.body.pageSize/1
+      }).then(function (result) {
       res.send(formactResult.success(result));
     }).catch(function (result) {
       res.send(formactResult.error('获取失败', result));
@@ -26,11 +35,14 @@ router.get('/guidedList', function(req, res, next) {
 });
 
 router.post('/guidedFind',function (req,res,next) {
-  guided.findAll({
+  guided.findAndCountAll({
     where:{
       'appType':{$like: '%'+(req.body.appType||'')+'%'},
       'title':{ $like: '%'+(req.body.title||'')+'%'}
-    }
+    },
+    order:[['isUsed' , 'ASC']],
+    offset:(req.body.page/1 - 1) * req.body.pageSize/1,
+    limit:req.body.pageSize/1
   }).then(function (result) {
     res.send(formactResult.success(result));
   }).catch(function (result) {

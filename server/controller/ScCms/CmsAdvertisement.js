@@ -8,16 +8,27 @@ var dateTime = require('../../utils/dateTime');
 var CmsAdvertisement = require('../../model/ScCms/CmsAdvertisement');
 var advert =CmsAdvertisement(connection,sequelize);
 
-router.get('/advertList', function(req, res, next) {
-  var id = req.query.id;
-  if (id && id.length) {
+router.post('/advertList', function(req, res, next) {
+  var id = req.body.id;
+  console.log(id);
+  if (id) {
+    console.log(id);
     advert.findOne({'where': {'id':id}}).then(function (result) {
       res.send(formactResult.success(result));
     }).catch(function (result) {
       res.send(formactResult.error('获取失败', result));
     });
-  } else {
-    advert.findAll().then(function (result) {
+  }else {
+    advert.findAndCountAll(
+      {
+        where:{
+          'isUsed':{$like: '%'+(req.body.isUsed||'')+'%'},
+          'title':{ $like: '%'+(req.body.title||'')+'%'}
+        },
+        order:[['isUsed' , 'ASC']],
+        offset:(req.body.page/1 - 1) * req.body.pageSize/1,
+        limit:req.body.pageSize/1
+      }).then(function (result) {
       res.send(formactResult.success(result));
     }).catch(function (result) {
       res.send(formactResult.error('获取失败', result));
@@ -25,18 +36,19 @@ router.get('/advertList', function(req, res, next) {
   }
 });
 
-router.post('/advertFind',function (req,res,next) {
-  advert.findAll({
-    where:{
-      'isUsed':{$like: '%'+(req.body.isUsed||'')+'%'},
-      'title':{ $like: '%'+(req.body.title||'')+'%'}
-    }
-  }).then(function (result) {
-    res.send(formactResult.success(result));
-  }).catch(function (result) {
-    res.send(formactResult.error('获取失败',result));
-  })
-})
+// router.post('/advertFind',function (req,res,next) {
+//   advert.findAll({
+//     where:{
+//       'isUsed':{$like: '%'+(req.body.isUsed||'')+'%'},
+//       'title':{ $like: '%'+(req.body.title||'')+'%'}
+//     },
+//     order:[['isUsed' , 'ASC']]
+//   }).then(function (result) {
+//     res.send(formactResult.success(result));
+//   }).catch(function (result) {
+//     res.send(formactResult.error('获取失败',result));
+//   })
+// })
 
 
 router.get('/existLocation', function(req, res, next) {
