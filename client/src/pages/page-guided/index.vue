@@ -278,8 +278,7 @@
     },
     methods: {
       handleCurrentChange(val){
-        console.log('当前页',val)
-        this.getGuidedAll(this.$data.Form);
+        this.getGuidedAll();
       },
       //多图上传删除
       multigraphRemove(file, fileList) {
@@ -287,7 +286,6 @@
         },
       //多图上传之前
       multigraphBefore(file) {
-//        console.log('beforeAvatarUpload',file);
 //        const isJPG = file.type === 'image/jpeg' || 'image/png' || 'image/bmp' || 'image/jpg' || 'image/gif';
 //        const isLt2M = file.size / 1024 / 1024 < 5;
 //
@@ -333,7 +331,6 @@
       },
       //新增
       async onGuidedAdd(){
-        console.log(123);
         this.$data.dialogFormVisible = true;
         this.$data.isAdd = true;
         this.$data.Form.id = '';
@@ -397,20 +394,21 @@
             message: this.$data.isAdd ? '添加成功' : '修改成功'
           });
           if(this.$data.isAdd){
-            this.getGuidedAll(this.$data.Form);
+            this.getGuidedAll();
           }else {
             this.$data.Form.id = '';
             this.$data.formadvert.title = '';
             this.$data.formadvert.appType = '';
-            this.getGuidedAll(this.$data.Form);
+            this.getGuidedAll();
           }
 
         }
        this.$data.loading = false;
       },
       //获取列表
-      async getGuidedAll(data){
-        let res =await this.$http.post('/guided/guidedList',data);
+      async getGuidedAll(){
+       console.log('$data.Form',this.$data.Form);
+        let res =await this.$http.post('/guided/guidedList',this.$data.Form);
         if(res.success && res.body){
           this.$data.total = res.body.count;
           this.$data.tableData = res.body.rows;
@@ -423,7 +421,7 @@
             'id':id
           })
           if(res.success){
-            this.getGuidedAll(this.$data.Form);
+            this.getGuidedAll();
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -438,10 +436,12 @@
       },
       //迷糊查询
      async guidedFind(){
-         this.$data.Form.page = 1;
+          this.$data.Form = {};
+          this.$data.Form.page = 1;
+          this.$data.Form.pageSize = 10;
          this.$data.Form.title=this.$data.formadvert.title;
          this.$data.Form.appType=this.$data.formadvert.appType;
-         this.getGuidedAll(this.$data.Form);
+         this.getGuidedAll();
       },
       //查看单条数据
       async handleSee(data,id){
@@ -486,7 +486,7 @@
       }
     },
     mounted() {
-      this.getGuidedAll(this.$data.Form);
+      this.getGuidedAll();
     }
   };
 </script>

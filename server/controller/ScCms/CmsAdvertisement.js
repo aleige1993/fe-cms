@@ -1,6 +1,8 @@
 
 var express = require('express');
 var router = express.Router();
+console.log(router);
+return false;
 var sequelize = require('sequelize');
 var connection = require('../../mysql/connection/ScCms');
 var formactResult = require('../../utils/formactResult');

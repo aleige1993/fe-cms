@@ -277,7 +277,7 @@
       },
 
       handleSee(data){
-        window.open(data.row.url);
+        window.open(data.url);
       },
       handleEdit(data, id) {
         if (id) {

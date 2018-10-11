@@ -29,6 +29,13 @@ class Tools {
     return enumText;
   }
 
+  /*****
+   * 表格最大高度
+   */
+  getTableHeight() {
+    return document.documentElement.clientHeight - 240;
+  }
+
 }
 
 export default new Tools();

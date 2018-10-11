@@ -34,6 +34,8 @@ router.post('/guidedList', function(req, res, next) {
   }
 });
 
+
+
 router.post('/guidedFind',function (req,res,next) {
   guided.findAndCountAll({
     where:{

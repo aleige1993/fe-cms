@@ -87,6 +87,6 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     tableName: 'cms_advertisement',
     timestamps: false,
-    freezeTableName: true
+      freezeTableName: true
   });
 };

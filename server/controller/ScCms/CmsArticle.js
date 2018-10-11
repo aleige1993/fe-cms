@@ -17,16 +17,20 @@ router.post('/articleList', (req, res, next) => {
       res.send(formactResult.error('获取失败', result));
     });
   } else {
-    article.findAll({
+    var currentPage = req.body.currentPage;
+    var pageSize = req.body.pageSize;
+    // console.log(currentPage, pageSize);
+    article.findAndCountAll({
       'where': {
         'title': {$like: '%' + (req.body.title || '') + '%'},
         'author': {$like: '%' + (req.body.author || '') + '%'}
       },
+      'offset': (currentPage - 1) * pageSize,
+      'limit': pageSize,
       'order': [['gmtCreate', 'DESC']]
     }).then(function (result) {
       res.send(formactResult.success(result));
     }).catch(function (result) {
-      console.log(result);
       res.send(formactResult.error('获取失败', result));
     });
   }

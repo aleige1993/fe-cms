@@ -17,13 +17,17 @@ router.post('/headlineList', (req, res, next) => {
       res.send(formactResult.error('获取失败', result));
     });
   } else {
-    headline.findAll({
+    var currentPage = req.body.currentPage;
+    var pageSize = req.body.pageSize;
+    headline.findAndCountAll({
       'where': {
         'title': {$like: '%' + (req.body.title || '') + '%'},
         'terminal': {$like: '%' + (req.body.terminal || '') + '%'},
         'appType': {$like: '%' + (req.body.appType || '') + '%'},
         'isUsed': {$like: '%' + (req.body.isUsed || '') + '%'},
       },
+      'offset': (currentPage - 1) * pageSize,
+      'limit': pageSize,
       'order': [['gmtCreate', 'DESC']]
     }).then(function (result) {
       res.send(formactResult.success(result));
