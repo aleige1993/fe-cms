@@ -96,7 +96,7 @@
       <el-pagination
         background
         @current-change="handleCurrentChange"
-        :current-page.sync="Form.page"
+        :current-page.sync="Form.currentPage"
         :page-size="Form.pageSize"
         layout="total, prev, pager, next"
         :total="total">
@@ -263,7 +263,7 @@
           imageUrl:'',
           appType:'',
           isUsed:'',
-          page:1,//当前页
+          currentPage:1,//当前页
           pageSize:10,//页条数
         },
         detail:'',//查看详情
@@ -437,7 +437,7 @@
       //迷糊查询
      async guidedFind(){
           this.$data.Form = {};
-          this.$data.Form.page = 1;
+          this.$data.Form.currentPage = 1;
           this.$data.Form.pageSize = 10;
          this.$data.Form.title=this.$data.formadvert.title;
          this.$data.Form.appType=this.$data.formadvert.appType;
@@ -466,7 +466,7 @@
           if(res.success){
             let imagelist = [];
             this.$data.Form = res.body;
-            this.$data.Form.page = 1;
+            this.$data.Form.currentPage = 1;
             this.$data.Form.pageSize = 10;
             if(res.body.location == 1){
               imagelist = res.body.imageUrl.split(',');

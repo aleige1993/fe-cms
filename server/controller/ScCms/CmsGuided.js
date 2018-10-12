@@ -24,7 +24,7 @@ router.post('/guidedList', function(req, res, next) {
           'title':{ $like: '%'+(req.body.title||'')+'%'}
         },
         order:[['isUsed' , 'ASC']],
-        offset:(req.body.page/1 - 1) * req.body.pageSize/1,
+        offset:(req.body.currentPage/1 - 1) * req.body.pageSize/1,
         limit:req.body.pageSize/1
       }).then(function (result) {
       res.send(formactResult.success(result));
@@ -43,7 +43,7 @@ router.post('/guidedFind',function (req,res,next) {
       'title':{ $like: '%'+(req.body.title||'')+'%'}
     },
     order:[['isUsed' , 'ASC']],
-    offset:(req.body.page/1 - 1) * req.body.pageSize/1,
+    offset:(req.body.currentPage/1 - 1) * req.body.pageSize/1,
     limit:req.body.pageSize/1
   }).then(function (result) {
     res.send(formactResult.success(result));

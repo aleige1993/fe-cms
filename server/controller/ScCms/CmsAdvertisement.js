@@ -1,8 +1,6 @@
 
 var express = require('express');
 var router = express.Router();
-console.log(router);
-return false;
 var sequelize = require('sequelize');
 var connection = require('../../mysql/connection/ScCms');
 var formactResult = require('../../utils/formactResult');
@@ -28,7 +26,7 @@ router.post('/advertList', function(req, res, next) {
           'title':{ $like: '%'+(req.body.title||'')+'%'}
         },
         order:[['isUsed' , 'ASC']],
-        offset:(req.body.page/1 - 1) * req.body.pageSize/1,
+        offset:(req.body.currentPage/1 - 1) * req.body.pageSize/1,
         limit:req.body.pageSize/1
       }).then(function (result) {
       res.send(formactResult.success(result));
@@ -38,19 +36,18 @@ router.post('/advertList', function(req, res, next) {
   }
 });
 
-// router.post('/advertFind',function (req,res,next) {
-//   advert.findAll({
-//     where:{
-//       'isUsed':{$like: '%'+(req.body.isUsed||'')+'%'},
-//       'title':{ $like: '%'+(req.body.title||'')+'%'}
-//     },
-//     order:[['isUsed' , 'ASC']]
-//   }).then(function (result) {
-//     res.send(formactResult.success(result));
-//   }).catch(function (result) {
-//     res.send(formactResult.error('获取失败',result));
-//   })
-// })
+router.post('/advertFindLocation',function (req,res,next) {
+  advert.findAll({
+    where:{
+      'location':{$like: '%'+(req.body.location||'')+'%'},
+      'isUsed':1
+    }
+  }).then(function (result) {
+    res.send(formactResult.success(result));
+  }).catch(function (result) {
+    res.send(formactResult.error('获取失败',result));
+  })
+})
 
 
 router.get('/existLocation', function(req, res, next) {

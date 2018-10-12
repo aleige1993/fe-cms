@@ -100,7 +100,7 @@
       <el-pagination
         background
         @current-change="handleCurrentChange"
-        :current-page.sync="Form.page"
+        :current-page.sync="Form.currentPage"
         :page-size="Form.pageSize"
         layout="total, prev, pager, next"
         :total="total">
@@ -220,7 +220,7 @@
           existLocationId: '',
           isOutUrl: 1,
           autoUrl: '',
-          page:1,
+          currentPage:1,
           pageSize:10
         },
         dialogFormVisible: false,
@@ -246,7 +246,7 @@
         this.$data.dialogFormVisible = false;
       },
       async onSubmit() {
-        this.$data.Form.page = 1;
+        this.$data.Form.currentPage = 1;
         this.getAdvert();
       },
       onAdvertAdd() {
@@ -288,7 +288,7 @@
             let res = await this.$http.post('/advert/advertList', {'id': id});
             if (res.success) {
               this.$data.Form = res.body;
-              this.$data.Form.page = 1;
+              this.$data.Form.currentPage = 1;
               this.$data.Form.pageSize = 10;
             }
           });
@@ -338,7 +338,7 @@
       async getAdvert() {
         console.log(this.$data.Form);
         let data = {
-          page:this.$data.Form.page,
+          currentPage:this.$data.Form.currentPage,
           pageSize:this.$data.Form.pageSize,
           title:this.$data.formadvert.title,
           isUsed:this.$data.formadvert.isUsed
