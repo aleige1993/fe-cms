@@ -44,13 +44,23 @@
           'undo',  // 撤销
           'redo'  // 重复
         ];
-        editor.customConfig.uploadImgServer = this.$config.HTTPBOSSURL + '/common/upload';
-        editor.customConfig.uploadFileName = 'file';
+        editor.customConfig.uploadImgServer = this.$config.HTTPOPENAPIURL + '/openapi/common/file/upload';
+        editor.customConfig.uploadImgHeaders = {
+          'appId': '100006',
+          'version': '',
+          'sign': 'songche'
+        };
+        editor.customConfig.uploadImgParams = {
+          // 如果版本 <=v3.1.0 ，属性值会自动进行 encode ，此处无需 encode
+          // 如果版本 >=v3.1.1 ，属性值不会自动 encode ，如有需要自己手动 encode
+          message: '{}'
+        };
+        editor.customConfig.uploadFileName = 'files';
         editor.customConfig.uploadImgHooks = {
           // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
           customInsert(insertImg, res, editor) {
             if (res.success) {
-              insertImg(res.body.url);
+              insertImg(res.data[0]);
             }
           }
         };

@@ -4,7 +4,6 @@ const prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  HTTPAPIURL: '"http://localhost:3000"',
-  // HTTPBOSSURL: '"http://10.164.238.15:8080"'
-  HTTPBOSSURL: '"http://boss.songcw.com"'
-})
+  HTTPBASEURL: '"http://localhost:3000"',
+  HTTPOPENAPIURL: '"http://192.168.31.247:10001"'
+});

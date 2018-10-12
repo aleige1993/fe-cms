@@ -12,7 +12,7 @@
         <li>
             <div>
               <!--<img class="top-avatar" src="./img/potrat.png" alt=""/>-->
-              {{loginInfo.loginName}}
+              {{loginInfo.userName}}
             </div>
         </li>
         <!--<li><a href="javascript:;" @click="modifypwd"><i class="iconfont icon-xiugaimima"></i> <span>修改密码</span></a></li>-->
