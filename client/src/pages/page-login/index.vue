@@ -17,13 +17,13 @@
               <div class="login-row">
                 <label for="username">用户名</label>
                 <div class="login-input">
-                  <el-input @keydown.enter="submitLogin" id="username" placeholder="用户名" v-model="loginForm.loginName"></el-input>
+                  <el-input @keydown.enter="submitLogin" id="username" placeholder="用户名" v-model="loginForm.account"></el-input>
                 </div>
               </div>
               <div class="login-row">
                 <label for="pwd">密码</label>
                 <div class="login-input">
-                  <el-input type="password" @keydown.enter="submitLogin" id="pwd" placeholder="密码" v-model="loginForm.loginPwd"></el-input>
+                  <el-input type="password" @keydown.enter="submitLogin" id="pwd" placeholder="密码" v-model="loginForm.password"></el-input>
                 </div>
               </div>
               <!--<div class="login-row">-->
@@ -61,28 +61,23 @@
         loading: false,
         errorInfo: '',
         loginForm: {
-          loginName: '',
-          loginPwd: ''
+          account: 'superadmin',
+          password: '123456',
+          code: 2
         }
       };
     },
     methods: {
       async submitLogin() {
         this.$data.loading = true;
-        let loginResult = await axios({
-          url: this.$config.HTTPBOSSURL + '/login',
-          dataType: 'json',
-          data: this.$data.loginForm,
-          method: 'POST'
+        let res = await this.$formdata.post(this.$config.HTTPOPENAPIURL + '/openapi/common/user/login', {
+          ... this.$data.loginForm
         });
         this.$data.loading = false;
         // 登录成功
-        let res = loginResult.data;
-        if (res.success && res.body) {
-          this.$userLogin.setLoginInfo(res.body);
+        if (res.success && res.success === 'true') {
+          this.$userLogin.setLoginInfo(res.data);
           this.$router.push('/index');
-        } else {
-          this.$data.errorInfo = res.reMsg;
         }
       }
     },

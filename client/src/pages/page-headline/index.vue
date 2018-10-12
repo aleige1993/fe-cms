@@ -104,7 +104,10 @@
         </el-form-item>
         <el-form-item label="封面" prop="coverPhotoUrl">
           <el-upload
-            :action="this.$config.HTTPBOSSURL + '/common/upload'"
+            :action="this.$config.HTTPOPENAPIURL + '/openapi/common/file/upload'"
+            :headers="{'appId': this.$config.HTTPHEADER_APPID,'version': this.$config.HTTPHEADER_APPVERSION,'sign': this.$config.HTTPHEADER_APPSIGN}"
+            :data="{'message': '{}'}"
+            :name="'files'"
             :show-file-list="false"
             :on-success="uploadSuccess">
             <div v-if="!form.coverPhotoUrl">
@@ -302,7 +305,7 @@
         });
       },
       uploadSuccess(file) {
-        this.$data.form.coverPhotoUrl = file.body.url;
+        this.$data.form.coverPhotoUrl = file.data[0];
       }
     },
     mounted() {

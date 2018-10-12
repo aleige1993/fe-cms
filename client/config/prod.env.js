@@ -1,6 +1,7 @@
 'use strict'
 module.exports = {
   NODE_ENV: '"production"',
-  HTTPAPIURL: '""',
-  HTTPBOSSURL: '"http://boss.songcw.com"'
+  HTTPBASEURL: '""',
+  HTTPOPENAPIURL: '"http://192.168.31.247:10001"',
+  PAGE_SIZE: 15
 }

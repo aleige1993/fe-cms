@@ -1,13 +1,14 @@
 import Vue from 'vue';
 import axios from 'axios';
-import config from './config';
+import config from './Config';
+
 // import userLogin from './userLogin';
 
 // 处理Raw纯json字符串得请求
-axios.defaults.baseURL = config.HTTPAPIURL;
+axios.defaults.baseURL = config.HTTPBASEURL;
 axios.defaults.headers.common['Content-Type'] = 'application/json;charset=UTF-8';
 
-class http {
+class Http {
   /**
    * 发起post请求
    * @param _url
@@ -60,4 +61,4 @@ class http {
     }).catch(err => {});
   }
 }
-export default http;
+export default Http;

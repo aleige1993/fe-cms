@@ -1,6 +1,6 @@
 
 import MyRouter from '@/router';
-class userLogin {
+class UserLogin {
   LOGININFOKEY='loginInfo';
   /**
    * 判断是否登录
@@ -50,4 +50,4 @@ class userLogin {
     localStorage.removeItem(this.LOGININFOKEY);
   }
 }
-export default new userLogin();
+export default new UserLogin();
