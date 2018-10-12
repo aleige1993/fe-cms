@@ -122,7 +122,10 @@
           <el-upload
             ref="upload"
             class="avatar-uploader"
-            :action="this.$config.HTTPBOSSURL + '/common/upload'"
+            :action="this.$config.HTTPOPENAPIURL + '/openapi/common/file/upload'"
+            :headers="{'appId': this.$config.HTTPHEADER_APPID,'version': this.$config.HTTPHEADER_APPVERSION,'sign': this.$config.HTTPHEADER_APPSIGN}"
+            :data="{'message': '{}'}"
+            :name="'files'"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload">

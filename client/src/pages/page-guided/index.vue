@@ -121,7 +121,10 @@
           <div v-show="Form.location==1||Form.location==''">
             <el-upload
               ref="multigraphUpload"
-              :action="this.$config.HTTPBOSSURL + '/common/upload'"
+              :action="this.$config.HTTPOPENAPIURL + '/openapi/common/file/upload'"
+              :headers="{'appId': this.$config.HTTPHEADER_APPID,'version': this.$config.HTTPHEADER_APPVERSION,'sign': this.$config.HTTPHEADER_APPSIGN}"
+              :data="{'message': '{}'}"
+              :name="'files'"
               list-type="picture-card"
               :limit='num'
               :file-list="fileList"
