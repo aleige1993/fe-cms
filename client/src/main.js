@@ -18,6 +18,7 @@ Vue.prototype.$formdata = new Formdata();
 Vue.prototype.$userLogin = UserLogin;
 Vue.prototype.$Tool = Tool;
 
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
