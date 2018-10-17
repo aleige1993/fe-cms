@@ -121,9 +121,9 @@
       addTableList() {
         this.$data.isAdd = true;
         this.$data.dialogFormVisible = true;
-//        this.$nextTick(() => {
-//          this.$refs.form.resetFields();
-//        });
+        this.$nextTick(() => {
+          this.$refs.form.resetFields();
+        });
       },
       editTableList(row) {
         this.$data.isAdd = false;
