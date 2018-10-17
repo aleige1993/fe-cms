@@ -7,6 +7,10 @@ var formactResult = require('../../utils/formactResult');
 var dateTime = require('../../utils/dateTime');
 var CmsArticle = require('../../model/ScCms/CmsArticle');
 var article = CmsArticle(connection, sequelize);
+var CmsHeadline = require('../../model/ScCms/CmsHeadline');
+var headline = CmsHeadline(connection, sequelize);
+var CmsBanner = require('../../model/ScCms/CmsBanner');
+var banner = CmsBanner(connection, sequelize);
 
 router.post('/articleList', (req, res, next) => {
   var id = req.body.id;
@@ -59,10 +63,27 @@ router.post('/articleModify', function(req, res, next) {
 });
 
 router.post('/articleDelete', function(req, res, next) {
-  article.destroy({'where': {'id': req.body.id}}).then(function () {
-    res.send(formactResult.success());
+  var id = req.body.id;
+  headline.findAll({'where': {'articleId': id}}).then(function (result) {
+    if (result && result.length) {
+      res.send(formactResult.error('删除失败, 该文章已被添加到资讯列表'));
+    } else {
+      banner.findAll({'where': {'articleId': id}}).then(function (result) {
+        if (result && result.length) {
+          res.send(formactResult.error('删除失败, 该文章已被添加到banner列表'));
+        } else {
+          article.destroy({'where': {'id': id}}).then(function () {
+            res.send(formactResult.success());
+          }).catch(function (result) {
+            res.send(formactResult.error('删除失败', result));
+          });
+        }
+      }).catch(function (result) {
+        res.send(formactResult.error('获取失败', result));
+      });
+    }
   }).catch(function (result) {
-    res.send(formactResult.error('删除失败', result));
+    res.send(formactResult.error('获取失败', result));
   });
 });
 

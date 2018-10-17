@@ -7,6 +7,8 @@ var formactResult = require('../../utils/formactResult');
 var dateTime = require('../../utils/dateTime');
 var CmsColumn = require('../../model/ScCms/CmsColumn');
 var column = CmsColumn(connection, sequelize);
+var CmsHeadline = require('../../model/ScCms/CmsHeadline');
+var headline = CmsHeadline(connection, sequelize);
 
 router.post('/columnList', (req, res, next) => {
   var currentPage = req.body.currentPage || 1;
@@ -47,10 +49,19 @@ router.post('/columnModify', function(req, res, next) {
 });
 
 router.post('/columnDelete', function(req, res, next) {
-  column.destroy({'where': {'id': req.body.id}}).then(function () {
-    res.send(formactResult.success());
+  var id = req.body.id;
+  headline.findAll({'where': {'columnType': id}}).then(function (result) {
+    if (result && result.length) {
+      res.send(formactResult.error('删除失败，该栏目中存在资讯内容'));
+    } else {
+      column.destroy({'where': {'id': id}}).then(function () {
+        res.send(formactResult.success());
+      }).catch(function (result) {
+        res.send(formactResult.error('删除失败', result));
+      });
+    }
   }).catch(function (result) {
-    res.send(formactResult.error('删除失败', result));
+    res.send(formactResult.error('获取失败', result));
   });
 });
 

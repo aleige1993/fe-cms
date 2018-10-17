@@ -25,6 +25,11 @@
     </el-form>
     <el-table v-loading="tableLoading" :data="tableData" border :height="this.$Tool.getTableHeight()">
       <el-table-column prop="name" label="栏目名称" width="180"></el-table-column>
+      <el-table-column prop="isDefault" label="类型" width="180">
+        <template slot-scope="scope">
+          <span>{{getEnumTextByValue(isDefaultEnum, scope.row.isDefault)}}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="sequence"  width="180" label="排序"></el-table-column>
       <!--<el-table-column prop="gmtCreate"  width="180" label="创建时间"></el-table-column>-->
       <!--<el-table-column prop="gmtUpdate"  width="180" label="更新时间"></el-table-column>-->
@@ -88,6 +93,13 @@
           sequence: {required: true, message: '排序不能为空'},
           isUsed: {required: true, message: '请选择是否启用'},
         },
+        isDefaultEnum: [{
+          "text": "预设",
+          "value": 1
+        }, {
+          "text": "自定义",
+          "value": 2
+        }],
         tableData: [],
         tableDataCount: 0,
         searchForm: {
