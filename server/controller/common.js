@@ -10,8 +10,11 @@ router.get('/menuList', function (req, res, next) {
     "name": "文章管理",
     "url": "/index/articleList"
   }, {
-    "name": "头条管理",
+    "name": "资讯管理",
     "url": "/index/headlineList"
+  }, {
+    "name": "栏目管理",
+    "url": "/index/columnList"
   }, {
     "name": "banner管理",
     "url": "/index/bannerList"
@@ -47,7 +50,7 @@ router.get('/items', function (req, res, next) {
   }, {
     "EnumName": "AppProcjectEnum",
     "items": [{
-      "text": "颂车网APP",
+      "text": "颂车APP",
       "value": 1
     }, {
       "text": "颂车邦APP",

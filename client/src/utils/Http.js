@@ -18,7 +18,6 @@ class Http {
     // let _headers = {
     //   'token': userLogin.getLoginToken().toString()
     // };
-    console.log(JSON.stringify(_data));
     return axios({
       // headers: _headers,
       url: _url,

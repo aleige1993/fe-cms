@@ -61,8 +61,8 @@
         loading: false,
         errorInfo: '',
         loginForm: {
-          account: '',
-          password: '',
+          account: 'superadmin',
+          password: '123456',
           code: 2
         }
       };
