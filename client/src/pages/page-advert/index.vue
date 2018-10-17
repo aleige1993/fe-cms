@@ -9,11 +9,11 @@
     </div>
 
     <el-form :inline="true" :model="formadvert" class="demo-form-inline">
-      <el-form-item label="">
-        <el-input size="medium" v-model="formadvert.title" placeholder="搜索标题"></el-input>
+      <el-form-item label="搜索标题">
+        <el-input size="mini" v-model="formadvert.title" placeholder=""></el-input>
       </el-form-item>
-      <el-form-item label="">
-        <el-select size="medium" v-model="formadvert.isUsed" placeholder="选择状态">
+      <el-form-item label="选择状态">
+        <el-select size="mini" v-model="formadvert.isUsed" placeholder="">
           <el-option label="全部" value=""></el-option>
           <el-option
             v-for="item in this.$Tool.getEnumData('IsUsedEnum')"
@@ -36,15 +36,15 @@
       <!--</el-form-item>-->
 
       <el-form-item>
-        <el-button size="medium" type="primary" @click="onSubmit">搜索</el-button>
+        <el-button size="mini" type="primary" @click="onSubmit">搜索</el-button>
       </el-form-item>
 
       <el-form-item>
-        <el-button size="medium" @click="onAdvertAdd">新增</el-button>
+        <el-button size="mini" @click="onAdvertAdd">新增</el-button>
       </el-form-item>
     </el-form>
 
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table :data="tableData" border style="width: 100%" :height="this.$Tool.getTableHeight()">
       <!--<el-table-column  prop="terminal" label="适用终端" width="180">-->
       <!--<template slot-scope="scope">-->
       <!--<span style="margin-left: 10px">{{ scope.row.terminal==1?'手机端':'电脑端' }}</span>-->
@@ -99,10 +99,11 @@
     <div class="block ">
       <el-pagination
         background
+        class="right"
         @current-change="handleCurrentChange"
         :current-page.sync="Form.currentPage"
         :page-size="Form.pageSize"
-        layout="total, prev, pager, next"
+        layout="total, prev, pager, next, jumper"
         :total="total">
       </el-pagination>
     </div>
@@ -219,12 +220,12 @@
           url: '',
           content: '',
           isUsed: '',
-          createrId: this.$userLogin.getLoginInfo().userId,
+          createrId: this.$userLogin.getLoginInfo().userNo,
           existLocationId: '',
           isOutUrl: 1,
           autoUrl: '',
           currentPage:1,
-          pageSize:10
+          pageSize:this.$config.PAGE_SIZE
         },
         dialogFormVisible: false,
         tableData: [],
@@ -292,7 +293,7 @@
             if (res.success) {
               this.$data.Form = res.body;
               this.$data.Form.currentPage = 1;
-              this.$data.Form.pageSize = 10;
+              this.$data.Form.pageSize = this.$config.PAGE_SIZE;
             }
           });
         }

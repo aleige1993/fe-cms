@@ -8,26 +8,26 @@
       </el-breadcrumb>
     </div>
 
-    <el-form :inline="true" :model="formadvert" class="demo-form-inline">
-      <el-form-item label="">
-        <el-input size="medium" v-model="formadvert.title" placeholder="搜索标题"></el-input>
+    <el-form :inline="true" :model="formadvert" class="demo-form-inline" size="mini">
+      <el-form-item label="搜索标题">
+        <el-input size="mini" v-model="formadvert.title" placeholder=""></el-input>
       </el-form-item>
-      <el-form-item label="">
-        <el-select size="medium" v-model="formadvert.appType" placeholder="选择终端">
+      <el-form-item label="选择终端">
+        <el-select size="mini" v-model="formadvert.appType" placeholder="">
           <el-option label="全部" value=""></el-option>
           <el-option v-for="item in this.$Tool.getEnumData('AppProcjectEnum')" :key="item.value" :label="item.text" :value="item.value"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button size="medium" type="primary" @click="guidedFind">搜索</el-button>
+        <el-button size="mini" type="primary" @click="guidedFind">搜索</el-button>
       </el-form-item>
 
       <el-form-item>
-        <el-button size="medium" @click="onGuidedAdd">新增</el-button>
+        <el-button size="mini" @click="onGuidedAdd">新增</el-button>
       </el-form-item>
     </el-form>
 
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table :data="tableData" border style="width: 100%" :height="this.$Tool.getTableHeight()" >
       <el-table-column  prop="appType" label="适用终端" width="180">
       <template slot-scope="scope">
         <span v-if="scope.row.appType==1" style="margin-left: 10px"> 颂车网APP</span>
@@ -95,10 +95,11 @@
     <div class="block ">
       <el-pagination
         background
+        class="right"
         @current-change="handleCurrentChange"
         :current-page.sync="Form.currentPage"
         :page-size="Form.pageSize"
-        layout="total, prev, pager, next"
+        layout="total, prev, pager, next, jumper"
         :total="total">
       </el-pagination>
     </div>
@@ -267,7 +268,8 @@
           appType:'',
           isUsed:'',
           currentPage:1,//当前页
-          pageSize:10,//页条数
+          pageSize:this.$config.PAGE_SIZE,//页条数
+          createrId:this.$userLogin.getLoginInfo().userNo
         },
         detail:'',//查看详情
         locationEnum: [{
@@ -441,7 +443,7 @@
      async guidedFind(){
           this.$data.Form = {};
           this.$data.Form.currentPage = 1;
-          this.$data.Form.pageSize = 10;
+          this.$data.Form.pageSize = this.$config.PAGE_SIZE;
          this.$data.Form.title=this.$data.formadvert.title;
          this.$data.Form.appType=this.$data.formadvert.appType;
          this.getGuidedAll();
@@ -470,7 +472,7 @@
             let imagelist = [];
             this.$data.Form = res.body;
             this.$data.Form.currentPage = 1;
-            this.$data.Form.pageSize = 10;
+            this.$data.Form.pageSize = this.$config.PAGE_SIZE;
             if(res.body.location == 1){
               imagelist = res.body.imageUrl.split(',');
               imagelist.forEach(function (item,index) {
