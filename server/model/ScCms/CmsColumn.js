@@ -2,7 +2,7 @@
 var dateTime = require('../../utils/dateTime');
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('CmsHeadline', {
+  return sequelize.define('CmsColumn', {
     id: {
       field: 'id',
       type: DataTypes.INTEGER(11),
@@ -10,50 +10,15 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true,
       autoIncrement: true
     },
-    type: {
-      field: 'type',
-      type: DataTypes.INTEGER(4),
-      allowNull: false
-    },
-    articleId: {
-      field: 'article_id',
-      type: DataTypes.INTEGER(11),
-      allowNull: true
-    },
-    url: {
-      field: 'url',
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    coverPhotoUrl: {
-      field: 'cover_photo_url',
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    title: {
-      field: 'title',
+    name: {
+      field: 'name',
       type: DataTypes.STRING,
       allowNull: false
     },
-    terminal: {
-      field: 'terminal',
+    sequence: {
+      field: 'sequence',
       type: DataTypes.INTEGER(4),
       allowNull: false
-    },
-    appType: {
-      field: 'app_type',
-      type: DataTypes.INTEGER(4),
-      allowNull: true
-    },
-    isUsed: {
-      field: 'is_used',
-      type: DataTypes.INTEGER(4),
-      allowNull: false
-    },
-    remark: {
-      field: 'remark',
-      type: DataTypes.STRING,
-      allowNull: true
     },
     gmtCreate: {
       field: 'gmt_create',
@@ -84,13 +49,18 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: true
     },
-    columnType: {
-      field: 'column_type',
+    isUsed: {
+      field: 'is_used',
+      type: DataTypes.INTEGER(4),
+      allowNull: false
+    },
+    isDefault: {
+      field: 'is_default',
       type: DataTypes.INTEGER(4),
       allowNull: false
     }
   }, {
-    tableName: 'cms_headline',
+    tableName: 'cms_column',
     timestamps: false,
     freezeTableName: true
   });

@@ -19,6 +19,7 @@
     },
     methods: {
       initEditor() {
+        let _this = this;
         editor = new Editor(this.$refs.editor);
         editor.customConfig.debug = true;
         // 自定义菜单配置
@@ -56,15 +57,23 @@
           message: '{}'
         };
         editor.customConfig.uploadFileName = 'files';
+        // 将图片大小限制为 20M
+        editor.customConfig.uploadImgMaxSize = 20 * 1024 * 1024;
+        // 将 timeout 时间改为 60s
+        editor.customConfig.uploadImgTimeout = 60000;
         editor.customConfig.uploadImgHooks = {
           // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
           customInsert(insertImg, res, editor) {
-            if (res.success) {
+            if (res.success && res.success === 'true') {
               insertImg(res.data[0]);
+            } else {
+              _this.$notify.error({
+                title: '提示',
+                message: res.message
+              });
             }
           }
         };
-        let _this = this;
         editor.customConfig.onchange = (html) => {
           _this.$emit('change', html);
         };

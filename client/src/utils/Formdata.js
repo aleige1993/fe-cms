@@ -1,9 +1,7 @@
 import Vue from 'vue';
 import axios from 'axios';
 import config from './Config';
-// import userLogin from './userLogin';
 
-// 处理Raw纯json字符串得请求
 // axios.defaults.baseURL = config.HTTPOPENAPIURL;
 axios.defaults.headers.common['Content-Type'] = 'multipart/form-data';
 

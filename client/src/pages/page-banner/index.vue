@@ -293,7 +293,7 @@
             if (this.$data.form.type === 2) {
               this.$data.form.url = this.$data.form.outUrl;
             }
-            this.$data.form.createrId = this.$userLogin.getLoginInfo().userId;
+            this.$data.form.createrId = this.$userLogin.getLoginInfo().userNo;
             let submitUrl = this.$data.isAdd ? '/banner/bannerAdd' : '/banner/bannerModify';
             let res = await this.$http.post(submitUrl, {
               ...this.$data.form

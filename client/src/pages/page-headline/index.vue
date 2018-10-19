@@ -4,13 +4,19 @@
     <div class="element-breadcrumb">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item><router-link to="/index">首页</router-link></el-breadcrumb-item>
-        <el-breadcrumb-item><router-link to="/index/headlineList">头条管理</router-link></el-breadcrumb-item>
-        <el-breadcrumb-item>头条列表</el-breadcrumb-item>
+        <el-breadcrumb-item><router-link to="/index/headlineList">资讯管理</router-link></el-breadcrumb-item>
+        <el-breadcrumb-item>资讯列表</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <el-form :inline="true" :model="searchForm" class="demo-form-inline" size="mini">
       <el-form-item label="标题">
         <el-input v-model="searchForm.title" placeholder=""></el-input>
+      </el-form-item>
+      <el-form-item label="栏目类型">
+        <el-select style="width: 100px"  v-model="searchForm.columnType" placeholder="请选择">
+          <el-option label="全部" value="">全部</el-option>
+          <el-option v-for="item in columnTypeList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="终端">
         <el-select style="width: 100px"  v-model="searchForm.terminal" placeholder="请选择">
@@ -43,6 +49,11 @@
     </el-form>
     <el-table v-loading="tableLoading" :data="tableData" border :height="this.$Tool.getTableHeight()">
       <el-table-column prop="title" label="标题" width="180"></el-table-column>
+      <el-table-column prop="columnType" label="栏目名称" width="100">
+        <template slot-scope="scope">
+          <span>{{getEnumTextByValue(columnTypeList, scope.row.columnType)}}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="url"  width="180" label="详情链接">
         <template slot-scope="scope">
           <a target="_blank" :href="scope.row.url">{{scope.row.url}}</a>
@@ -119,6 +130,11 @@
         <el-form-item label="标题名称" prop="title">
           <el-input  placeholder="" v-model="form.title"></el-input>
         </el-form-item>
+        <el-form-item label="栏目类型" prop="columnType">
+          <el-select v-model="form.columnType" placeholder="请选择">
+            <el-option v-for="item in columnTypeList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="发布终端类型" prop="terminal">
           <el-select v-model="form.terminal" placeholder="请选择">
             <el-option v-for="item in this.$Tool.getEnumData('TerminalTypeEnum')" :key="item.value" :label="item.text" :value="item.value"></el-option>
@@ -167,10 +183,12 @@
           outUrl: {required: true, message: '外部链接不能为空'},
           coverPhotoUrl: {required: true, message: '请选择封面'},
           title: {required: true, message: '标题名称不能为空'},
+          columnType: {required: true, message: '请选择栏目类型'},
           terminal: {required: true, message: '请选择发布终端'},
           appType: {required: true, message: '请选择终端项目'},
           isUsed: {required: true, message: '请选择是否启用'},
         },
+        columnTypeList: [],
         tableData: [],
         tableDataCount: 0,
         searchForm: {
@@ -192,7 +210,7 @@
         return this.$Tool.getEnumTextByValue(enumName, value);
       },
       getSelectRow(row) {
-        this.$refs.form.resetFields();
+//        this.$refs.form.resetFields();
         this.$data.form.articleId = row.id;
         this.$data.form.articleName = row.title;
         this.$data.form.articleUrl = row.url;
@@ -222,6 +240,7 @@
             outUrl: '',
             coverPhotoUrl: '',
             title: '',
+            columnType: null,
             terminal: null,
             appType: [],
             isUsed: null
@@ -287,7 +306,7 @@
             if (this.$data.form.type === 2) {
               this.$data.form.url = this.$data.form.outUrl;
             }
-            this.$data.form.createrId = this.$userLogin.getLoginInfo().userId;
+            this.$data.form.createrId = this.$userLogin.getLoginInfo().userNo;
             let submitUrl = this.$data.isAdd ? '/headline/headlineAdd' : '/headline/headlineModify';
             let res = await this.$http.post(submitUrl, {
               ...this.$data.form
@@ -306,10 +325,23 @@
       },
       uploadSuccess(file) {
         this.$data.form.coverPhotoUrl = file.data[0];
+      },
+      async getColumnTypeList() {
+        let res = await this.$http.post('/column/columnList', {
+          isUsed: 1
+        });
+        if (res.success) {
+          this.$data.columnTypeList = res.body.rows.map(item => {
+            item.text = item.name;
+            item.value = item.id;
+            return item;
+          });
+        }
       }
     },
     mounted() {
       this.tableList();
+      this.getColumnTypeList();
     }
   }
 </script>

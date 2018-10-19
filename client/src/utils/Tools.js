@@ -21,7 +21,11 @@ class Tools {
    */
   getEnumTextByValue(enumName, value) {
     let enumText = '';
-    this.getEnumData(enumName).map(item => {
+    let enumArray = enumName;
+    if (typeof enumName === 'string') {
+      enumArray = this.getEnumData(enumName);
+    }
+    enumArray.map(item => {
         if (item.value === value) {
           enumText = item.text;
         }
