@@ -47,6 +47,7 @@
     </el-table>
     <el-pagination
       class="right"
+      background
       @current-change="tableList"
       layout="total, prev, pager, next, jumper"
       :current-page="this.$data.searchForm.currentPage"

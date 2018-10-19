@@ -34,9 +34,13 @@ function searchHeadlineList(req, res, next) {
 router.post('/headlineList', (req, res, next) => {
   var columnName = req.body.columnName;
   if (columnName) {
-    column.findOne({'where': {'name': columnName}}).then(function (result) {
-      req.body.columnType = result.id;
-      searchHeadlineList(req, res, next);
+    column.findAndCountAll({'where': {'name': columnName}}).then(function (result) {
+      if (result && result.rows && result.rows.length) {
+        req.body.columnType = result.rows[0].id;
+        searchHeadlineList(req, res, next);
+      } else {
+        res.send(formactResult.success(result));
+      }
     }).catch(function (result) {
       res.send(formactResult.error('获取失败', result));
     });

@@ -1,7 +1,7 @@
 <template>
   <div id="page-article-detail" class="el-form-item__content w-e-text-container">
-    <h1>{{detail.title}}</h1>
-    <h2>{{detail.author}} {{detail.gmtCreate}}</h2>
+    <h1 v-if="isShowAll">{{detail.title}}</h1>
+    <h2 v-if="isShowAll">{{detail.author}} {{detail.gmtCreate}}</h2>
     <div class="w-e-text" v-html="detail.content"></div>
   </div>
 </template>
@@ -12,6 +12,11 @@
     data() {
       return {
         detail: {}
+      }
+    },
+    computed: {
+      isShowAll() {
+        return this.$route.query.showall === 'true';
       }
     },
     async mounted() {
