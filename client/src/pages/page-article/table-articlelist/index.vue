@@ -38,6 +38,7 @@
     </el-table>
     <el-pagination
       class="right"
+      background
       @current-change="tableList"
       layout="total, prev, pager, next, jumper"
       :current-page="this.$data.searchForm.currentPage"
@@ -50,7 +51,7 @@
       :title="isAdd ? '添加文章' : '编辑文章'"
       :visible.sync="dialogFormVisible"
       :close-on-click-modal="false">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px" size="mini">
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px" size="mini">
         <el-form-item label="标题" prop="title">
           <el-input v-model="form.title" auto-complete="off"></el-input>
         </el-form-item>
@@ -60,8 +61,15 @@
         <el-form-item label="摘要" prop="abstract">
           <el-input type="textarea" placeholder="" v-model="form.abstract"></el-input>
         </el-form-item>
-        <el-form-item label="内容" prop="content">
+        <el-form-item label="正文" prop="content">
           <editor :editor-content="form.content" @change="editorContent"></editor>
+        </el-form-item>
+        <el-form-item label="只显示正文" prop="showAll">
+          <el-radio-group v-model="form.showAll">
+            <el-radio name="type" v-for="item in this.$Tool.getEnumData('IsYesEnum')" :key="item.value" :label="item.value" :value="item.value">
+              {{item.text}}
+            </el-radio>
+          </el-radio-group>
         </el-form-item>
         <el-form-item v-if="!isAdd" label="文章链接" prop="url">
           <a target="_blank" :href="form.url">{{form.url}}</a>
@@ -94,12 +102,7 @@
         tableDataCount: 0,
         isAdd: true,
         dialogFormVisible: false,
-        form: {
-          title: '',
-          author: '',
-          abstract: '',
-          content: ''
-        },
+        form: {},
         loading: false,
         tableLoading: false
       }
@@ -122,13 +125,21 @@
         this.$data.isAdd = true;
         this.$data.dialogFormVisible = true;
         this.$nextTick(() => {
-          this.$refs.form.resetFields();
+//          this.$refs.form.resetFields();
+          this.$data.form = {
+            title: '',
+            author: '',
+            abstract: '',
+            content: '',
+            showAll: 2
+          };
         });
       },
       editTableList(row) {
         this.$data.isAdd = false;
         this.$data.dialogFormVisible = true;
         this.$nextTick(() => {
+          row.showAll = row.url.indexOf('showall=true') <= -1 ?  1 : 2;
           this.$refs.form.resetFields();
           this.$data.form = Object.assign({}, row);
         });
@@ -167,9 +178,8 @@
         this.$refs['form'].validate(async (valid) => {
           if (valid) {
             this.$data.loading = true;
-            if (this.$data.isAdd) {
-              this.$data.form.url = window.location.origin + '/#/index/articleDetail?noaction=true&id=';
-            }
+            let url = window.location.origin + '/#/index/articleDetail?noaction=true&showall=';
+            this.$data.form.url = `${url}${(this.$data.form.showAll === 2)}&id=${this.$data.isAdd ? '': this.$data.form.id}`;
             this.$data.form.createrId = this.$userLogin.getLoginInfo().userNo;
             let submitUrl = this.$data.isAdd ? '/article/articleAdd' : '/article/articleModify';
             let res = await this.$http.post(submitUrl, {

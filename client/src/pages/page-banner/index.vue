@@ -72,6 +72,7 @@
     <el-pagination
       class="right"
       @current-change="tableList"
+      background
       layout="total, prev, pager, next, jumper"
       :current-page="this.$data.searchForm.currentPage"
       :page-size="this.$config.PAGE_SIZE"
@@ -110,11 +111,13 @@
             :data="{'message': '{}'}"
             :name="'files'"
             :show-file-list="false"
-            :on-success="uploadSuccess">
-            <div v-if="!form.coverPhotoUrl">
-              <el-button size="mini" type="primary">选择文件</el-button>
+            :on-success="uploadSuccess"
+            :on-progress="uploadProgress">
+            <span v-if="uploading"><i class="el-icon-loading"></i> 上传中...</span>
+            <div v-else="">
+              <el-button v-if="!form.coverPhotoUrl" size="mini" type="primary">选择文件</el-button>
+              <img v-else="" height="90" :src="form.coverPhotoUrl" alt="">
             </div>
-            <img v-else="" height="90" :src="form.coverPhotoUrl" alt="">
           </el-upload>
         </el-form-item>
         <el-form-item label="标题名称" prop="title">
@@ -176,17 +179,18 @@
           sequence: {required: true, message: '排序不能为空'},
           isUsed: {required: true, message: '请选择是否启用'},
         },
-        tableData: [],
-        tableDataCount: 0,
         searchForm: {
           pageSize: this.$config.PAGE_SIZE
         },
-        isAdd: true,
-        dialogFormVisible: false,
-        form: {},
-        loading: false,
+        tableData: [],
+        tableDataCount: 0,
         tableLoading: false,
-        dialogTableVisible: false
+        isAdd: true,
+        form: {},
+        dialogFormVisible: false,
+        dialogTableVisible: false,
+        loading: false,
+        uploading: false
       }
     },
     components: {
@@ -310,8 +314,19 @@
           }
         });
       },
-      uploadSuccess(file) {
-        this.$data.form.coverPhotoUrl = file.data[0];
+      uploadSuccess(res) {
+        this.$data.uploading = false;
+        if (res.success && res.success === 'true') {
+          this.$data.form.coverPhotoUrl = res.data[0];
+        } else {
+          this.$notify.error({
+            title: '提示',
+            message: res.message
+          });
+        }
+      },
+      uploadProgress() {
+        this.$data.uploading = true;
       }
     },
     mounted() {

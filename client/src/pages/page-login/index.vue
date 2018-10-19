@@ -17,13 +17,13 @@
               <div class="login-row">
                 <label for="username">用户名</label>
                 <div class="login-input">
-                  <el-input @keydown.enter="submitLogin" id="username" placeholder="用户名" v-model="loginForm.account"></el-input>
+                  <input class="el-input__inner" @keydown.enter="submitLogin" id="username" placeholder="用户名" v-model="loginForm.account" />
                 </div>
               </div>
               <div class="login-row">
                 <label for="pwd">密码</label>
                 <div class="login-input">
-                  <el-input type="password" @keydown.enter="submitLogin" id="pwd" placeholder="密码" v-model="loginForm.password"></el-input>
+                  <input class="el-input__inner" type="password" @keydown.enter="submitLogin" id="pwd" placeholder="密码" v-model="loginForm.password" />
                 </div>
               </div>
               <!--<div class="login-row">-->
