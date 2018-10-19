@@ -262,7 +262,14 @@
         });
       },
       handleAvatarSuccess(res, file) {
-        this.$data.Form.imageUrl = file.response.body.url;
+        if(res.success == 'true'){
+          this.$data.Form.imageUrl = res.data[0];
+        }else{
+          this.$notify.error({
+            title: '错误',
+            message: res.message
+          });
+        }
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg' || 'image/png' || 'image/bmp' || 'image/jpg' || 'image/gif';

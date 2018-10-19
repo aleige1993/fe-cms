@@ -129,6 +129,7 @@
               list-type="picture-card"
               :limit='num'
               :file-list="fileList"
+              accept=".png"
               :on-success="multigraphSuccess"
               :before-upload="multigraphBefore"
               :on-remove="multigraphRemove">
@@ -140,7 +141,10 @@
             <el-upload
               ref="singleUpload"
               class="avatar-uploader"
-              :action="this.$config.HTTPBOSSURL + '/common/upload'"
+              :action="this.$config.HTTPOPENAPIURL + '/openapi/common/file/upload'"
+              :headers="{'appId': this.$config.HTTPHEADER_APPID,'version': this.$config.HTTPHEADER_APPVERSION,'sign': this.$config.HTTPHEADER_APPSIGN}"
+              :data="{'message': '{}'}"
+              :name="'files'"
               :show-file-list="false"
               :on-success="singleSuccess"
               :before-upload="singleBefore">
@@ -288,7 +292,7 @@
       //多图上传删除
       multigraphRemove(file, fileList) {
         this.getImageMultigraph(fileList);
-        },
+      },
       //多图上传之前
       multigraphBefore(file) {
 //        const isJPG = file.type === 'image/jpeg' || 'image/png' || 'image/bmp' || 'image/jpg' || 'image/gif';
@@ -307,7 +311,7 @@
         let arr=[];
         fileList.map((item,index)=>{
           if(item.response){
-            arr.push(item.response.body.url);
+            arr.push(item.response.data[0]);
           }else{
             arr.push(item.url);
           }
@@ -316,7 +320,14 @@
       },
       //多图上传成功
       multigraphSuccess(res,file,fileList) {
-        this.getImageMultigraph(fileList);
+        if(res.code == '0000'){
+          this.getImageMultigraph(fileList);
+        }else{
+          this.$notify.error({
+            title: '错误',
+            message: res.message
+          });
+        }
       },
       //单图上传之前
       singleBefore(file){
@@ -332,7 +343,14 @@
       },
       //单图上传成功
       singleSuccess(res,file){
-        this.$data.imageSingle = file.response.body.url;
+        if(res.success == 'true'){
+          this.$data.imageSingle = res.data[0];
+        }else{
+          this.$notify.error({
+            title: '错误',
+            message: res.message
+          });
+        }
       },
       //新增
       async onGuidedAdd(){
