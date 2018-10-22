@@ -8,31 +8,33 @@ var dateTime = require('../../utils/dateTime');
 var CmsAdvertisement = require('../../model/ScCms/CmsAdvertisement');
 var advert =CmsAdvertisement(connection,sequelize);
 
-router.post('/advertList', function(req, res, next) {
+router.post('/advertList',async (req, res, next)=>{
   var id = req.body.id;
-  console.log(id);
   if (id) {
-    console.log(id);
-    advert.findOne({'where': {'id':id}}).then(function (result) {
+    let result = await advert.findOne({'where': {'id':id}});
+    try{
       res.send(formactResult.success(result));
-    }).catch(function (result) {
-      res.send(formactResult.error('获取失败', result));
-    });
+    }catch(err){
+      res.send(formactResult.error('获取失败', err));
+    }
   }else {
-    advert.findAndCountAll(
+    let currentPage = req.body.currentPage || 1;
+    let pageSize = req.body.pageSize || 9999;
+    let result = await  advert.findAndCountAll(
       {
         where:{
           'isUsed':{$like: '%'+(req.body.isUsed||'')+'%'},
           'title':{ $like: '%'+(req.body.title||'')+'%'}
         },
         order:[['isUsed' , 'ASC']],
-        offset:(req.body.currentPage/1 - 1) * req.body.pageSize/1,
-        limit:req.body.pageSize/1
-      }).then(function (result) {
+        offset:(currentPage/1 - 1) * pageSize/1,
+        limit:pageSize/1
+      });
+    try{
       res.send(formactResult.success(result));
-    }).catch(function (result) {
-      res.send(formactResult.error('获取失败', result));
-    });
+    }catch (err){
+      res.send(formactResult.error('获取失败', err));
+    }
   }
 });
 

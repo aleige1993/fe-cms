@@ -36,11 +36,11 @@
       <!--</el-form-item>-->
 
       <el-form-item>
-        <el-button size="mini" type="primary" @click="onSubmit">搜索</el-button>
+        <el-button size="mini" type="primary" @click="onSubmit">查询</el-button>
       </el-form-item>
 
       <el-form-item>
-        <el-button size="mini" @click="onAdvertAdd">新增</el-button>
+        <el-button size="mini" type="primary" @click="onAdvertAdd">添加</el-button>
       </el-form-item>
     </el-form>
 
@@ -59,7 +59,11 @@
 
       <el-table-column prop="title" label="标题" width="300"></el-table-column>
 
-      <el-table-column prop="url" label="链接"></el-table-column>
+      <el-table-column prop="url" label="链接">
+        <template slot-scope="scope">
+          <a target="_blank" :href="scope.row.url">{{scope.row.url}}</a>
+        </template>
+      </el-table-column>
 
       <el-table-column prop="isUsed" label="状态" width="180">
         <template slot-scope="scope">
@@ -67,14 +71,14 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="id" label="操作" width="180">
+      <el-table-column prop="id" label="操作" width="240">
         <template slot-scope="scope">
           <div v-if="scope.row.isUsed==1">
-            <el-button
-              size="mini"
-              type="warning"
-              @click="handleSee(scope, scope.row.id)">查看
-            </el-button>
+            <!--<el-button-->
+              <!--size="mini"-->
+              <!--type="warning"-->
+              <!--@click="handleSee(scope, scope.row.id)">查看-->
+            <!--</el-button>-->
             <el-button
               size="mini"
               type="success"
@@ -82,10 +86,15 @@
             </el-button>
           </div>
           <div v-else>
+            <!--<el-button-->
+              <!--size="mini"-->
+              <!--type="warning"-->
+              <!--@click="handleSee(scope.row, scope.row.id)">查看-->
+            <!--</el-button>-->
             <el-button
               size="mini"
-              type="warning"
-              @click="handleSee(scope.row, scope.row.id)">查看
+              type="success"
+              @click="handleEdit(scope, scope.row.id)">编辑
             </el-button>
             <el-button
               size="mini"
@@ -113,7 +122,14 @@
           <el-select size="medium" v-model="Form.location" placeholder="请选择位置">
             <el-option label="1" value="1"></el-option>
             <el-option label="2" value="2"></el-option>
-            <el-option label="3" value="2"></el-option>
+            <el-option label="3" value="3"></el-option>
+            <el-option label="4" value="4"></el-option>
+            <el-option label="5" value="5"></el-option>
+            <el-option label="6" value="6"></el-option>
+            <el-option label="7" value="7"></el-option>
+            <el-option label="8" value="8"></el-option>
+            <el-option label="9" value="9"></el-option>
+            <el-option label="10" value="10"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="标题" prop="title">
@@ -415,6 +431,9 @@
     width: 178px;
     height: 100px;
     display: block;
+  }
+  a:hover{
+    color:#409eff;
   }
 </style>
 

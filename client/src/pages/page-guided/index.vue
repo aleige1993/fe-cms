@@ -19,21 +19,22 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button size="mini" type="primary" @click="guidedFind">搜索</el-button>
+        <el-button size="mini" type="primary" @click="guidedFind">查询</el-button>
       </el-form-item>
 
       <el-form-item>
-        <el-button size="mini" @click="onGuidedAdd">新增</el-button>
+        <el-button size="mini"  type="primary" @click="onGuidedAdd">添加</el-button>
       </el-form-item>
     </el-form>
 
     <el-table :data="tableData" border style="width: 100%" :height="this.$Tool.getTableHeight()" >
       <el-table-column  prop="appType" label="适用终端" width="180">
       <template slot-scope="scope">
-        <span v-if="scope.row.appType==1" style="margin-left: 10px"> 颂车网APP</span>
-        <span v-if="scope.row.appType==2" style="margin-left: 10px"> 颂车邦APP</span>
-        <span v-if="scope.row.appType==3" style="margin-left: 10px"> 出行APP</span>
-        <span v-if="scope.row.appType==4" style="margin-left: 10px"> 车企源APP</span>
+          <span>{{getEnumTextByValue('AppProcjectEnum', scope.row.appType)}}</span>
+        <!--<span v-if="scope.row.appType==item.value" style="margin-left: 10px" v-for="item in this.$Tool.getEnumData('AppProcjectEnum')" :key="item.value"   > {{item.text}}</span>-->
+        <!--<span v-if="scope.row.appType==2" style="margin-left: 10px"> 颂车邦APP</span>-->
+        <!--<span v-if="scope.row.appType==3" style="margin-left: 10px"> 出行APP</span>-->
+        <!--<span v-if="scope.row.appType==4" style="margin-left: 10px"> 车企源APP</span>-->
       </template>
       </el-table-column>
 
@@ -127,7 +128,6 @@
               :data="{'message': '{}'}"
               :name="'files'"
               list-type="picture-card"
-              :limit='num'
               :file-list="fileList"
               accept=".png"
               :on-success="multigraphSuccess"
@@ -286,6 +286,9 @@
       };
     },
     methods: {
+      getEnumTextByValue(enumName, value) {
+        return this.$Tool.getEnumTextByValue(enumName, value);
+      },
       handleCurrentChange(val){
         this.getGuidedAll();
       },
@@ -331,15 +334,15 @@
       },
       //单图上传之前
       singleBefore(file){
-        const isJPG = file.type === 'image/jpeg' || 'image/png' || 'image/bmp' || 'image/jpg' || 'image/gif';
-        const isLt2M = file.size / 1024 / 1024 < 5;
-        if (!isJPG) {
-          this.$message.error('上传头像图片格式不正确!');
-        }
-        if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
-        }
-        return isJPG && isLt2M;
+//        const isJPG = file.type === 'image/jpeg' || 'image/png' || 'image/bmp' || 'image/jpg' || 'image/gif';
+//        const isLt2M = file.size / 1024 / 1024 < 5;
+//        if (!isJPG) {
+//          this.$message.error('上传头像图片格式不正确!');
+//        }
+//        if (!isLt2M) {
+//          this.$message.error('上传头像图片大小不能超过 2MB!');
+//        }
+//        return isJPG && isLt2M;
       },
       //单图上传成功
       singleSuccess(res,file){
